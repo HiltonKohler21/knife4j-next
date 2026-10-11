@@ -23,9 +23,9 @@ title: 发布说明
 
 **共享 React UI 与开发工具**
 
-- 更新前端同主版本依赖，core 对齐 TypeScript `5.9` 并更新 docx（PR #843、#847）；迁移 React Router `7.18.4`、Vite `8.3.4`、ESLint `10`、React `19.3.0` 与 Ant Design `6.6.5`，适配路由、页签滚动与组件接口；Tag、边框等细节随组件基线更新（PR #849、#851、#853、#857、#859、#861、#864）。
+- 更新前端同主版本依赖，更新 docx（PR #843、#847）；迁移 React Router `7.18.4`、Vite `8.3.4`、ESLint `10`、React `19.3.0` 与 Ant Design `6.6.5`，适配路由、页签滚动与组件接口；Tag、边框等细节随组件基线更新（PR #849、#851、#853、#857、#859、#861、#864）。
 - 外部资源面板替换弃用的 List 组件，保留精确 URI 授权、默认拒绝和 registry-only 解析边界（PR #865）。
-- OAS3 前端开发与 Knife4x UI 同步工具要求 Node `22.13+` 或 `24+`；TypeScript 继续沿用 `5.9`。
+- OAS3 三个工作区统一使用 TypeScript `6.0.3`，迁出弃用编译配置并收紧 Web Crypto 字节数组类型；core 输出目标由 ES5 调整为 ES2015，不再提供 ES5 降级输出，包入口与公开 API 保持，Vite UI 编译目标保持（PR #867）。前端开发与 Knife4x UI 同步工具要求 Node `22.13+` 或 `24+`。
 
 OpenAPI 3.0 / 3.1 / 3.2 消费范围保持不变，OAS2 继续兼容维护。Knife4x Go `v0.8.6` 纳入同一套共享 UI，保持 Go `1.22`、module、Handler API 与路由语义不变。
 

@@ -27,7 +27,7 @@ go get github.com/songxychn/knife4j-next/knife4x/go@v0.8.6
 ## v0.8.6
 
 Go 1.22 基线、module 路径、`Config`、`NewHandler` 与路由语义保持不变。
-相较于 `v0.8.5`，共享 React UI 更新同主版本依赖与 docx，并迁移 React Router 7、Vite 8、React 19 和 Ant Design 6；适配页签滚动及外部资源面板组件（PR #843、#847、#849、#851、#853、#861、#864、#865）。OAS3 开发工具迁移至 ESLint 10，UI 同步要求 Node 22.13+ 或 24+。本版本不升级 Go 依赖，也不纳入 TypeScript 6。
+相较于 `v0.8.5`，共享 React UI 更新同主版本依赖与 docx，并迁移 React Router 7、Vite 8、React 19 和 Ant Design 6；适配页签滚动及外部资源面板组件（PR #843、#847、#849、#851、#853、#861、#864、#865）。OAS3 开发工具迁移至 ESLint 10，UI 同步要求 Node 22.13+ 或 24+。OAS3 三个工作区统一使用 TypeScript 6.0.3，core 输出目标由 ES5 调整为 ES2015，不再提供 ES5 降级输出；包入口、公开 API 与 Vite UI 编译目标保持（PR #867）。本版本不升级 Go 依赖。
 
 ## v0.8.5
 

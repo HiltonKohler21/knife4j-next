@@ -21,7 +21,7 @@ workflow 的自动 tag 触发器只接收根级 `v*` tag，不接收 `knife4x/go
 
 ## v0.8.6 发布范围
 
-相较于 `knife4x/go/v0.8.5`，本次发布纳入共享 React UI 的依赖维护、React Router 7 / Vite 8 / React 19 / Ant Design 6 迁移及组件适配（PR #843、#847、#849、#851、#853、#861、#864、#865）。
+相较于 `knife4x/go/v0.8.5`，本次发布纳入共享 React UI 的依赖维护、React Router 7 / Vite 8 / React 19 / Ant Design 6 迁移及组件适配及 TypeScript 6.0.3 迁移（PR #843、#847、#849、#851、#853、#861、#864、#865、#867）。
 具体变更见 [Go 版本说明](../../docs/knife4x/index.md)。
 
 Go 1.22 基线、module、`Config`、`NewHandler` 与路由语义保持不变。入口消费已有的
