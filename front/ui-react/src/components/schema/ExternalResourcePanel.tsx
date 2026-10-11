@@ -1,4 +1,4 @@
-import { Alert, Button, Checkbox, Divider, List, Modal, Space, Spin, Tag, Typography, message } from 'antd';
+import { Alert, Button, Checkbox, Divider, Empty, Modal, Space, Spin, Tag, Typography, message, theme } from 'antd';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useExternalResources, type ExternalResourceStatus } from '../../context/SchemaEngineContext';
@@ -14,6 +14,8 @@ function externalResourceSummaryKey(status: ExternalResourceStatus): string {
 const ExternalResourcePanel: React.FC = () => {
   const { t } = useTranslation();
   const resources = useExternalResources();
+  const { token } = theme.useToken();
+  const listStyle = { '--knife4j-resource-split': token.colorSplit } as React.CSSProperties;
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<string[]>([]);
 
@@ -136,10 +138,9 @@ const ExternalResourcePanel: React.FC = () => {
         {pending.length === 0 ? (
           <Text type="secondary">{t('resource.pending.empty')}</Text>
         ) : (
-          <List
-            dataSource={pending}
-            renderItem={(candidate) => (
-              <List.Item className="knife4j-resource-passport">
+          <ul className="knife4j-resource-list" style={listStyle}>
+            {pending.map((candidate) => (
+              <li className="knife4j-resource-passport" key={candidate.retrievalUriHash}>
                 <Checkbox
                   checked={selected.includes(candidate.retrievalUriHash)}
                   onChange={(event) =>
@@ -175,9 +176,9 @@ const ExternalResourcePanel: React.FC = () => {
                     )}
                   </Space>
                 </Checkbox>
-              </List.Item>
-            )}
-          />
+              </li>
+            ))}
+          </ul>
         )}
 
         {loaded.length > 0 && (
@@ -187,13 +188,15 @@ const ExternalResourcePanel: React.FC = () => {
               <Text strong>{t('resource.loaded.title')}</Text>
               <Tag color="green">{loaded.length}</Tag>
             </div>
-            <List
-              dataSource={loaded}
-              renderItem={(node) => {
+            <ul className="knife4j-resource-list" style={listStyle}>
+              {loaded.map((node) => {
                 const sources =
                   resources.snapshot?.edges.filter((edge) => edge.targetRetrievalUri === node.retrievalUri) ?? [];
                 return (
-                  <List.Item className="knife4j-resource-passport knife4j-resource-passport-loaded">
+                  <li
+                    className="knife4j-resource-passport knife4j-resource-passport-loaded"
+                    key={node.retrievalUriHash}
+                  >
                     <Space orientation="vertical" size={3}>
                       <Space wrap>
                         <Tag color="green">{t('resource.loaded.tag')}</Tag>
@@ -218,10 +221,10 @@ const ExternalResourcePanel: React.FC = () => {
                         </Text>
                       ))}
                     </Space>
-                  </List.Item>
+                  </li>
                 );
-              }}
-            />
+              })}
+            </ul>
           </>
         )}
 
@@ -232,42 +235,43 @@ const ExternalResourcePanel: React.FC = () => {
               <Text strong>{t('resource.diagnostics.title')}</Text>
               <Tag color="red">{resources.diagnostics.length + (resources.registrationError ? 1 : 0)}</Tag>
             </div>
-            <List
-              dataSource={[...resources.diagnostics]}
-              renderItem={(diagnostic) => {
-                const retryCandidate = failed.find(
-                  (candidate) =>
-                    candidate.retrievalUriHash === diagnostic.targetRetrievalUriHash && candidate.retryable,
-                );
-                return (
-                  <List.Item
-                    actions={
-                      retryCandidate
-                        ? [
-                            <Button
-                              key="retry"
-                              size="small"
-                              disabled={busy}
-                              onClick={() => void resources.retry(retryCandidate.retrievalUriHash)}
-                            >
-                              {t('resource.retry')}
-                            </Button>,
-                          ]
-                        : undefined
-                    }
-                  >
-                    <Space orientation="vertical" size={2}>
-                      <Space wrap>
-                        <Tag color="red">{diagnostic.code}</Tag>
-                        <Tag>{diagnostic.phase}</Tag>
-                        {diagnostic.resourceDisplay && <Text code>{diagnostic.resourceDisplay}</Text>}
+            {resources.diagnostics.length === 0 ? (
+              <div className="knife4j-resource-list-empty">
+                <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+              </div>
+            ) : (
+              <ul className="knife4j-resource-list" style={listStyle}>
+                {resources.diagnostics.map((diagnostic, index) => {
+                  const retryCandidate = failed.find(
+                    (candidate) =>
+                      candidate.retrievalUriHash === diagnostic.targetRetrievalUriHash && candidate.retryable,
+                  );
+                  return (
+                    <li key={index}>
+                      <Space orientation="vertical" size={2}>
+                        <Space wrap>
+                          <Tag color="red">{diagnostic.code}</Tag>
+                          <Tag>{diagnostic.phase}</Tag>
+                          {diagnostic.resourceDisplay && <Text code>{diagnostic.resourceDisplay}</Text>}
+                        </Space>
+                        <Text type="secondary">{diagnostic.sourcePointer}</Text>
                       </Space>
-                      <Text type="secondary">{diagnostic.sourcePointer}</Text>
-                    </Space>
-                  </List.Item>
-                );
-              }}
-            />
+                      {retryCandidate && (
+                        <span className="knife4j-resource-actions">
+                          <Button
+                            size="small"
+                            disabled={busy}
+                            onClick={() => void resources.retry(retryCandidate.retrievalUriHash)}
+                          >
+                            {t('resource.retry')}
+                          </Button>
+                        </span>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
             {resources.registrationError && (
               <Alert
                 type="error"
