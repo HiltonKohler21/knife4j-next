@@ -10,7 +10,7 @@ title: 模块说明
 | --- | --- |
 | `knife4j/` | Java 主工程——用户实际引入的 starter 和 webjar 都在这里构建 |
 | `front/` | 活跃前端：`core` + `ui-react`（OAS3）、`vue3`（OAS2 兼容） |
-| `knife4x/` | 嵌入式控制台：Go `v0.8.5` 已发布，Rust 后置；UI 共用 `front/ui-react` |
+| `knife4x/` | 嵌入式控制台：Go `v0.8.6` 已发布，Rust 后置；UI 共用 `front/ui-react` |
 | `docs/` | 当前 VitePress 文档站 |
 | `tools/` | 验证、发布与任务看板脚本 |
 | `legacy/` | 冻结参考（`vue2`、`insight`、`sandbox`），不参与主线构建 |
@@ -68,7 +68,7 @@ Boot 3 的 OAS 3.1 输出需要设置 `springdoc.api-docs.version=OPENAPI_3_1`�
 
 | 模块 | 说明 |
 | --- | --- |
-| `knife4j-demo-openapi3` | OpenAPI 3 在线演示应用（Boot 4.0.7 + Boot4 starter + React UI，部署到 `openapi3.demo.knife4jnext.com`） |
+| `knife4j-demo-openapi3` | OpenAPI 3 在线演示应用（Boot 4.0.8 + Boot4 starter + React UI，部署到 `openapi3.demo.knife4jnext.com`） |
 | `knife4j-demo-openapi2` | OpenAPI 2 在线演示应用（Boot 2.7.18 + springfox 2.10.5 + Vue 3 UI，部署到 `openapi2.demo.knife4jnext.com`） |
 | `knife4j-smoke-tests` | 自动化冒烟测试（14 个子模块覆盖 Boot 2.x OAS2/OAS3/WebFlux/独立聚合、Boot 3.x Jakarta/WebFlux/Gateway WebFlux/Gateway Server Web MVC/独立聚合、Boot 4.x WebMVC/Gateway/独立聚合） |
 
