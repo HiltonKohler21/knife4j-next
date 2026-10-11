@@ -10,29 +10,31 @@ on:
   workflow_dispatch:
     inputs:
       mode:
-        description: "Recovery mode (never deploys Maven artifacts)"
+        description: "Recovery mode: finalize-only or publish an unpublished existing tag"
         required: true
         type: choice
         options:
           - finalize-only
+          - publish-existing
       tag:
-        description: "Existing annotated vX.Y.Z tag to finalize"
+        description: "Existing annotated vX.Y.Z tag to recover"
         required: true
         type: string
+
+concurrency:
+  group: release-${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
+  cancel-in-progress: false
 
 jobs:
   publish:
     runs-on: ubuntu-latest
     timeout-minutes: 180
-    if: ${{ (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') && !contains(github.ref_name, '-rc')) || (github.event_name == 'workflow_dispatch' && inputs.mode == 'finalize-only') }}
+    if: ${{ (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') && !contains(github.ref_name, '-rc')) || (github.event_name == 'workflow_dispatch' && (inputs.mode == 'finalize-only' || inputs.mode == 'publish-existing')) }}
     permissions:
       contents: write
     env:
       RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
       RELEASE_ROOT: ${{ github.event_name == 'workflow_dispatch' && format('{0}/release-source', github.workspace) || github.workspace }}
-    defaults:
-      run:
-        working-directory: knife4j
     steps:
       - name: Checkout release tag for publishing
         if: ${{ github.event_name == 'push' }}
@@ -45,7 +47,7 @@ jobs:
         if: ${{ github.event_name == 'workflow_dispatch' }}
         uses: actions/checkout@v7
 
-      - name: Checkout release tag for finalize-only
+      - name: Checkout release tag for recovery
         if: ${{ github.event_name == 'workflow_dispatch' }}
         uses: actions/checkout@v7
         with:
@@ -68,7 +70,7 @@ jobs:
         working-directory: .
 
       - name: Set up JDK 17 for publishing
-        if: ${{ github.event_name == 'push' }}
+        if: ${{ github.event_name == 'push' || inputs.mode == 'publish-existing' }}
         uses: actions/setup-java@v5
         env:
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
@@ -83,7 +85,7 @@ jobs:
           gpg-passphrase: GPG_PASSPHRASE
 
       - name: Set up JDK 17 for finalize-only verification
-        if: ${{ github.event_name == 'workflow_dispatch' }}
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'finalize-only' }}
         uses: actions/setup-java@v5
         with:
           distribution: temurin
@@ -91,38 +93,83 @@ jobs:
           cache: maven
 
       - name: Set up Node.js
-        if: ${{ github.event_name == 'push' }}
+        if: ${{ github.event_name == 'push' || inputs.mode == 'publish-existing' }}
         uses: actions/setup-node@v6
         with:
-          node-version-file: .nvmrc
+          node-version-file: ${{ github.event_name == 'workflow_dispatch' && 'release-source/.nvmrc' || '.nvmrc' }}
 
       - name: Set up bun
-        if: ${{ github.event_name == 'push' }}
+        if: ${{ github.event_name == 'push' || inputs.mode == 'publish-existing' }}
         uses: oven-sh/setup-bun@v2
         with:
-          bun-version-file: .bun-version
+          bun-version-file: ${{ env.RELEASE_ROOT }}/.bun-version
 
       - name: Install front/vue3 dependencies (bun)
-        if: ${{ github.event_name == 'push' }}
+        if: ${{ github.event_name == 'push' || inputs.mode == 'publish-existing' }}
         run: bun install --frozen-lockfile
-        working-directory: front/vue3
+        working-directory: ${{ env.RELEASE_ROOT }}/front/vue3
 
       - name: Install front workspace dependencies
-        if: ${{ github.event_name == 'push' }}
+        if: ${{ github.event_name == 'push' || inputs.mode == 'publish-existing' }}
         run: bun install --frozen-lockfile
-        working-directory: front
+        working-directory: ${{ env.RELEASE_ROOT }}/front
+
+      - name: Set up pinned publishing Maven
+        if: ${{ github.event_name == 'push' || inputs.mode == 'publish-existing' }}
+        run: |
+          version=3.9.16
+          archive="$RUNNER_TEMP/apache-maven-$version-bin.tar.gz"
+          curl --fail --show-error --silent --location \
+            "https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/$version/apache-maven-$version-bin.tar.gz" \
+            --output "$archive"
+          echo "831a8591fe20c8243b1dbe7d71e3244f31d1665b0804b2e825e38cbbe5ce0cafb8338851f90780735568773e0a6cd07bbec107cda0b896b008b861075358b6f6  $archive" | sha512sum --check --strict
+          tar -xzf "$archive" -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/apache-maven-$version/bin" >> "$GITHUB_PATH"
+
+      - name: Verify target version is unpublished
+        if: ${{ github.event_name == 'push' || inputs.mode == 'publish-existing' }}
+        run: |
+          python3 - <<'PYTHON'
+          import os
+          import pathlib
+          import urllib.error
+          import urllib.request
+
+          root = pathlib.Path(os.environ["RELEASE_ROOT"])
+          version = os.environ["RELEASE_TAG"].removeprefix("v")
+          modules = ["knife4j"] + [
+              line.split("#", 1)[0].strip()
+              for line in (root / "tools/release-modules.txt").read_text().splitlines()
+              if line.split("#", 1)[0].strip()
+          ]
+          checked = 0
+          for module in modules:
+              extensions = ["pom"] if module in ("knife4j", "knife4j-dependencies") else ["pom", "jar"]
+              for extension in extensions:
+                  url = f"https://repo.maven.apache.org/maven2/com/baizhukui/{module}/{version}/{module}-{version}.{extension}"
+                  try:
+                      with urllib.request.urlopen(urllib.request.Request(url, method="HEAD"), timeout=30) as response:
+                          raise SystemExit(f"Refusing to deploy: artifact already exists ({response.status}): {url}")
+                  except urllib.error.HTTPError as error:
+                      if error.code != 404:
+                          raise SystemExit(f"Cannot confirm unpublished version ({error.code}): {url}") from error
+                  checked += 1
+          print(f"Unpublished release verified: {checked} primary artifacts return HTTP 404.")
+          PYTHON
 
       - name: Publish to Maven Central
-        if: ${{ github.event_name == 'push' }}
+        if: ${{ github.event_name == 'push' || inputs.mode == 'publish-existing' }}
         env:
           CENTRAL_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
           CENTRAL_PASSWORD: ${{ secrets.CENTRAL_PASSWORD }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         run: |
           release_modules="$(sed -E 's/[[:space:]]*#.*$//' ../tools/release-modules.txt | sed '/^[[:space:]]*$/d' | paste -sd, -)"
+          mvn --version
           mvn -B -ntp -Prelease deploy \
             -pl "$release_modules" \
             -am
+        working-directory: ${{ env.RELEASE_ROOT }}/knife4j
 
       - name: Verify public Maven Central artifacts
         run: |

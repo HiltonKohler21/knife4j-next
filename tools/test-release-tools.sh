@@ -550,7 +550,7 @@ fi
 
 publish_block="$tmp_root/publish-block.txt"
 grep -A3 -F -- "- name: Publish to Maven Central" "$workflow" > "$publish_block"
-assert_contains "$publish_block" 'if: ${{ github.event_name == '\''push'\'' }}'
+assert_contains "$publish_block" 'if: ${{ github.event_name == '\''push'\'' || inputs.mode == '\''publish-existing'\'' }}'
 deploy_count="$(grep -c -F -- 'mvn -B -ntp -Prelease deploy' "$workflow")"
 [ "$deploy_count" -eq 1 ] || fail "release workflow must contain exactly one Maven deploy command"
 
