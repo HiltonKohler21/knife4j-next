@@ -2,8 +2,8 @@ import { afterEach, describe, expect, test, vi } from 'vitest';
 import { addUriSchemePlugin } from '@hyperjump/browser';
 import officialSubset from './fixtures/official-2020-12-subset.json';
 import springdocDocument from './fixtures/springdoc-openapi-3.1.json';
-import boot3MvcSpringdocDocument from '../../ui-react/src/test-fixtures/springdoc-oas31/boot3-mvc-springdoc-2.8.9.json';
-import boot3WebfluxSpringdocDocument from '../../ui-react/src/test-fixtures/springdoc-oas31/boot3-webflux-springdoc-2.8.9.json';
+import boot3MvcSpringdocDocument from '../../ui-react/src/test-fixtures/springdoc-oas31/boot3-mvc-springdoc-2.9.1.json';
+import boot3WebfluxSpringdocDocument from '../../ui-react/src/test-fixtures/springdoc-oas31/boot3-webflux-springdoc-2.9.1.json';
 import boot4MvcSpringdocDocument from '../../ui-react/src/test-fixtures/springdoc-oas31/boot4-mvc-springdoc-3.0.3.json';
 import browserSupplementDocument from '../../ui-react/src/test-fixtures/springdoc-oas31/browser-supplement-3.1.2.json';
 import {
@@ -235,7 +235,7 @@ describe('resource graph and evaluation semantics', () => {
 });
 
 describe('OpenAPI 3.1 and resource policy', () => {
-  test('registers and evaluates the real Springdoc 2.8.9 and 3.0.3 matrix snapshots', async () => {
+  test('registers and evaluates the real Springdoc 2.9.1 and 3.0.3 matrix snapshots', async () => {
     const engine = createEngine();
     const snapshots = [
       ['boot3-mvc', boot3MvcSpringdocDocument],

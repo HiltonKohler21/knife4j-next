@@ -28,6 +28,15 @@ Existing OpenAPI 3.0.x behavior remains available. OpenAPI 3.2.x consumption is 
 | OpenAPI 3.1.x | React | Supported | Shares one feature set, subject to the boundaries below |
 | OpenAPI 3.2.x | React | Published | Never guessed or treated as 3.1; see the [OpenAPI 3.2 matrix](./openapi32-en) |
 
+::: info Unreleased source upgrade
+The source branch uses springdoc `2.9.1` with Swagger Jakarta annotations/models/core `2.2.55`.
+Boot3 MVC, WebFlux and standalone aggregation require Boot `3.4.7+` on the 3.4 line or `3.5.1+`
+on the 3.5 line (Framework `6.2.8`). Raw Java Object properties and `List<Object>` items allow any
+JSON value in OAS 3.1. The table below records the published `5.7.7` matrix; see the
+[source dependency changes](../reference/version-ref#待发布源码依赖更新) and
+[migration configuration](../reference/configuration#生成-openapi-3-1-文档).
+:::
+
 ### springdoc generation matrix
 
 | Spring Boot | starter / springdoc | Generated document | Verified path | Evidence |

@@ -50,6 +50,13 @@ public class Boot3AggregationJakartaDocHttpSmokeTest {
     }
 
     @Test
+    public void shouldUseSupportedBootBomRuntime() {
+        Assert.assertEquals("3.4.7", org.springframework.boot.SpringBootVersion.getVersion());
+        Assert.assertEquals("6.2.8", org.springframework.core.SpringVersion.getVersion());
+        Assert.assertEquals("6.2.8", org.springframework.web.util.pattern.PathPattern.class.getPackage().getImplementationVersion());
+    }
+
+    @Test
     public void shouldServeDocHtmlAndDiskSwaggerConfigOnBoot3Aggregation() throws IOException {
         context = new SpringApplicationBuilder(TestAggregationApplication.class)
                 .web(WebApplicationType.SERVLET)

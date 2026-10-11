@@ -39,7 +39,7 @@ import {
   type SchemaDocumentSession,
 } from './schemaDocumentSession';
 import hostAcceptanceDocument from '../test-fixtures/oas32-normative/host-acceptance-3.2.0.json';
-import boot3MvcSpringdocDocument from '../test-fixtures/springdoc-oas31/boot3-mvc-springdoc-2.8.9.json';
+import boot3MvcSpringdocDocument from '../test-fixtures/springdoc-oas31/boot3-mvc-springdoc-2.9.1.json';
 import boot4MvcSpringdocDocument from '../test-fixtures/springdoc-oas31/boot4-mvc-springdoc-3.0.3.json';
 
 const ENTRY_URI = 'https://docs.knife4j.example/v3/api-docs?matrix=oas32-host';

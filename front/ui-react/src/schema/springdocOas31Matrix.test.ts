@@ -1,7 +1,9 @@
 import { afterEach, describe, expect, test, vi } from 'vitest';
 import { buildOperationDebugModel, dereferenceReferenceObject } from 'knife4j-core';
 import { parseMenuTags } from '../api/knife4jClient';
-import boot3MvcSpringdocDocument from '../test-fixtures/springdoc-oas31/boot3-mvc-springdoc-2.8.9.json';
+import boot3MvcSpringdocDocument from '../test-fixtures/springdoc-oas31/boot3-mvc-springdoc-2.9.1.json';
+import boot3WebfluxSpringdocDocument from '../test-fixtures/springdoc-oas31/boot3-webflux-springdoc-2.9.1.json';
+import boot4MvcSpringdocDocument from '../test-fixtures/springdoc-oas31/boot4-mvc-springdoc-3.0.3.json';
 import browserSupplementDocument from '../test-fixtures/springdoc-oas31/browser-supplement-3.1.2.json';
 import type { SwaggerDoc } from '../types/swagger';
 import {
@@ -28,6 +30,27 @@ afterEach(() => {
 });
 
 describe('Springdoc OpenAPI 3.1 acceptance matrix', () => {
+  test.each([
+    ['Boot3 MVC', boot3MvcSpringdocDocument],
+    ['Boot3 WebFlux', boot3WebfluxSpringdocDocument],
+    ['Boot4 MVC', boot4MvcSpringdocDocument],
+  ])('%s preserves arbitrary JSON values in raw Object schemas', async (runtime, document) => {
+    const session = await createSchemaDocumentSession(
+      document as unknown as SwaggerDoc,
+      `https://docs.knife4j.example/v3/api-docs?runtime=${encodeURIComponent(runtime)}`,
+    );
+    sessions.push(session);
+    for (const value of [null, 'text', 42, true, ['item'], { source: 'springdoc' }]) {
+      await expect(
+        session.evaluate('#/components/schemas/Oas31MatrixRequest', {
+          metadata: value,
+          mode: 'stable',
+          tuple: [value, value],
+        }),
+      ).resolves.toMatchObject({ valid: true });
+    }
+  });
+
   test('drives navigation, debug parsing, schema models, examples, and diagnostics from one real response', async () => {
     const operations = parseMenuTags(springdocDocument).flatMap((tag) => tag.operations);
     expect(operations.map(({ path, method }) => ({ path, method }))).toEqual(
@@ -151,7 +174,7 @@ describe('Springdoc OpenAPI 3.1 acceptance matrix', () => {
               types: ['string', 'null'],
               example: 'matrix',
             }),
-            expect.objectContaining({ name: 'metadata', type: 'object' }),
+            expect.objectContaining({ name: 'metadata', type: 'unknown' }),
             expect.objectContaining({ name: 'mode', constValue: 'stable', example: 'stable' }),
             expect.objectContaining({
               name: 'tuple',

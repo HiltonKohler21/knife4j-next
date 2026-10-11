@@ -48,6 +48,13 @@ public class Boot35JakartaDocHttpSmokeTest {
     }
 
     @Test
+    public void shouldUseSupportedBootBomRuntime() {
+        Assert.assertEquals("3.5.1", org.springframework.boot.SpringBootVersion.getVersion());
+        Assert.assertEquals("6.2.8", org.springframework.core.SpringVersion.getVersion());
+        Assert.assertEquals("6.2.8", org.springframework.web.util.pattern.PathPattern.class.getPackage().getImplementationVersion());
+    }
+
+    @Test
     public void shouldScanValidatedCglibProxiedController() throws IOException {
         context = new SpringApplicationBuilder(TestApplication.class)
                 .web(WebApplicationType.SERVLET)

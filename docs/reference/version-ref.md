@@ -69,6 +69,26 @@ title: 版本对照
 Java 8 / 17 下限与 Boot 2 / 3 / 4 支持边界保持不变；Boot 2 demo 继续显式使用 SLF4J `1.7.36`。
 Boot3 Jakarta 线继续使用 springdoc `2.8.9`；`2.8.17` 在现有 Boot3 聚合 smoke 场景启动失败，本轮暂缓。
 
+## 待发布源码依赖更新
+
+以下变更在 `5.7.7` 基线上实施，尚未发布，不属于上方历史版本记录。
+
+| 依赖或支持边界 | `5.7.7` 基线 | 当前源码 |
+| --- | --- | --- |
+| springdoc Boot3 Jakarta | `2.8.9` | `2.9.1` |
+| Swagger Jakarta annotations / models / core | `2.2.47` | 全部 `2.2.55`，共享 BOM 与 Boot4 直接依赖一致 |
+| Boot3 编译基线 | Boot `3.4.0` / Framework `6.2.0` | Boot `3.4.7` / Framework `6.2.8` |
+| Boot3 生成器支持下限 | Boot `3.4.0` / `3.5.0` | Boot 3.4 线 `3.4.7`；Boot 3.5 线 `3.5.1` |
+
+MVC、WebFlux 与独立聚合的 smoke 使用真实 Boot `3.4.7` BOM；Boot35 MVC 使用真实 Boot
+`3.5.1` BOM，均检查实际 Framework `6.2.8`。Gateway 使用自己的既有 Cloud/Boot 组合，
+不把生成器的下限套用到所有网关模块。Java 8 / 17 下限不变，Boot4 springdoc 保持 `3.0.3`。
+
+OAS 3.1 中，raw Java `Object` 字段及 `List<Object>` 元素默认省略 `type: object`，允许任意 JSON
+值。这是 [Swagger 上游修正](https://github.com/swagger-api/swagger-core/pull/5112)。迁移配置见
+[生成 OpenAPI 3.1 文档](./configuration#生成-openapi-3-1-文档)。版本组合评估及复现证据见
+[#844](https://github.com/songxychn/knife4j-next/issues/844)。
+
 ## 核心依赖版本
 
 以下为 `knife4j-next 5.7.7` 内部管理的依赖版本，用户一般不需要手动指定。

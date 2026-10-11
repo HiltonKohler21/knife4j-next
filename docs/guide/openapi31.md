@@ -24,6 +24,14 @@ OpenAPI 3.2.x 消费契约见 [OpenAPI 3.2 支持矩阵](./openapi32)；已发�
 | OpenAPI 3.1.x | React | 支持 | 使用同一 feature set，并遵守下列产品边界 |
 | OpenAPI 3.2.x | React | 已发布支持 | 不猜测或降级成 3.1 处理；能力与限制见 [OpenAPI 3.2 支持矩阵](./openapi32) |
 
+::: info 待发布源码升级
+当前源码的 Boot3 Jakarta WebMVC、WebFlux 与独立聚合使用 springdoc `2.9.1`，Swagger Jakarta
+`annotations` / `models` / `core` 统一为 `2.2.55`。JDK 下限仍为 17；Boot 3.4 线下限为
+`3.4.7`，Boot 3.5 线下限为 `3.5.1`（共同需要 Framework `6.2.8`）。Boot `3.5.0` 不满足此下限。
+这是待发布源码的要求；下方 `5.7.7` 及更早版本的历史依赖与兼容记录保持原样。
+详见[版本对照](../reference/version-ref#待发布源码依赖更新)。
+:::
+
 ### springdoc 生成矩阵
 
 | Spring Boot | starter / springdoc | 生成结果 | 已验证路径 | 证据 |

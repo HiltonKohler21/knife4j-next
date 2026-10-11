@@ -159,7 +159,6 @@
             "examples": ["matrix"]
           },
           "metadata": {
-            "type": "object",
             "description": "Intentionally generic object"
           },
           "mode": {
@@ -171,7 +170,7 @@
           "tuple": {
             "type": "array",
             "description": "Tuple value",
-            "items": { "type": "object" },
+            "items": {},
             "maxItems": 2,
             "minItems": 2,
             "prefixItems": [{}, {}]
