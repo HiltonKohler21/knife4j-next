@@ -15,6 +15,7 @@ mvn -B -ntp spotless:check
 mvn -B -ntp -Dknife4j-skipTests=false verify
 
 python3 "$REPO_ROOT/knife4j/knife4j-openapi3-ui/src/test/scripts/test-incremental-webjar.py"
+python3 "$REPO_ROOT/knife4j/knife4j-openapi3-ui/src/test/scripts/test-current-workspace.py"
 
 "$REPO_ROOT/tools/verify-configuration-metadata.sh"
 "$REPO_ROOT/tools/verify-java-compatibility-contracts.py"
