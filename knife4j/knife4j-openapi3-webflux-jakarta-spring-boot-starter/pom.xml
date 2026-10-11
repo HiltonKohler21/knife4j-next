@@ -10,6 +10,17 @@
     <name>knife4j-openapi3-webflux-jakarta-spring-boot-starter</name>
     <url>https://doc.xiaominfo.com</url>
     <description>SpringWebflux with Knife4j,Only Support OpenAPI3</description>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${knife4j-spring-boot3.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
     <dependencies>
         <!-- springdoc ui -->
         <dependency>
