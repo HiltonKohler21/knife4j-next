@@ -25,7 +25,7 @@
         "jest": "^29.4.3",
         "prettier": "^3.9.9",
         "ts-jest": "^29.4.14",
-        "typescript": "5.9.3",
+        "typescript": "6.0.3",
       },
     },
     "schema-engine": {
@@ -43,7 +43,7 @@
         "eslint": "10.12.0",
         "globals": "13.24.0",
         "prettier": "^3.9.9",
-        "typescript": "5.9.3",
+        "typescript": "6.0.3",
         "vitest": "^4.1.11",
       },
     },
@@ -79,6 +79,7 @@
       },
       "devDependencies": {
         "@eslint/js": "10.0.1",
+        "@types/node": "25.6.0",
         "@types/react": "19.3.0",
         "@types/react-dom": "19.3.0",
         "@types/react-resizable": "^3.0.4",
@@ -91,7 +92,7 @@
         "globals": "13.24.0",
         "jsdom": "^26.1.0",
         "jszip": "^3.10.2",
-        "typescript": "^5.0.2",
+        "typescript": "6.0.3",
         "vite": "8.3.4",
         "vitest": "^4.1.11",
       },
@@ -1308,7 +1309,7 @@
 
     "type-fest": ["type-fest@4.41.0", "https://registry.npmmirror.com/type-fest/-/type-fest-4.41.0.tgz", {}, ""],
 
-    "typescript": ["typescript@5.9.3", "https://registry.npmmirror.com/typescript/-/typescript-5.9.3.tgz", { "bin": { "tsc": "bin/tsc", "tsserver": "bin/tsserver" } }, ""],
+    "typescript": ["typescript@6.0.3", "https://registry.npmmirror.com/typescript/-/typescript-6.0.3.tgz", { "bin": { "tsc": "bin/tsc", "tsserver": "bin/tsserver" } }, "sha512-y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38/ODjNbr43SsoXqNuAisEf1GdCxqWcdBw=="],
 
     "uglify-js": ["uglify-js@3.19.3", "https://registry.npmmirror.com/uglify-js/-/uglify-js-3.19.3.tgz", { "bin": { "uglifyjs": "bin/uglifyjs" } }, ""],
 
