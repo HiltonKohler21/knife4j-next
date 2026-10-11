@@ -1,9 +1,11 @@
 interface CryptoLike {
   randomUUID?: () => string;
-  getRandomValues?: (array: Uint8Array) => Uint8Array;
+  getRandomValues?: (array: Uint8Array<ArrayBuffer>) => Uint8Array<ArrayBuffer>;
 }
 
-function createUuidFromRandomValues(getRandomValues: (array: Uint8Array) => Uint8Array): string {
+function createUuidFromRandomValues(
+  getRandomValues: (array: Uint8Array<ArrayBuffer>) => Uint8Array<ArrayBuffer>,
+): string {
   const bytes = getRandomValues(new Uint8Array(16));
   bytes[6] = (bytes[6] & 0x0f) | 0x40;
   bytes[8] = (bytes[8] & 0x3f) | 0x80;
