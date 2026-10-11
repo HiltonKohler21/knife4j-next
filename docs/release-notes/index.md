@@ -12,7 +12,24 @@ title: 发布说明
 
 ## knife4j-next 版本
 
-### 5.7.6 <Badge type="tip" text="最新" />
+### 5.7.7 <Badge type="tip" text="最新" />
+
+`5.7.7` 是基于 `5.7.6` 的向后兼容补丁版本，纳入已合并的 Java 依赖维护、共享 React UI 工具链迁移与 WebJar 增量打包修复。同步发布 Knife4x Go `v0.8.6`。
+
+**Java 与发布产物**
+
+- Boot4 线更新至 Spring Boot `4.0.8` / Spring Cloud `2025.1.3`，并更新 SLF4J `2.0.20`、Lombok `1.18.48`、Gson `2.14.0` 与 commons-lang3 `3.21.0`（PR #845）。Java 8 / 17 下限与 Boot 2 / 3 / 4 支持边界保持不变；Boot3 Jakarta 线继续使用 springdoc `2.8.9`，其升级另由 issue #844 跟踪。
+- 修复 React WebJar 增量构建遗留旧分块、源码包生命周期回跳清空输出的问题，并保护根符号链接的外部目标（PR #855）。
+
+**共享 React UI 与开发工具**
+
+- 更新前端同主版本依赖，core 对齐 TypeScript `5.9` 并更新 docx（PR #843、#847）；迁移 React Router `7.18.4`、Vite `8.3.4`、ESLint `10`、React `19.3.0` 与 Ant Design `6.6.5`，适配路由、页签滚动与组件接口；Tag、边框等细节随组件基线更新（PR #849、#851、#853、#857、#859、#861、#864）。
+- 外部资源面板替换弃用的 List 组件，保留精确 URI 授权、默认拒绝和 registry-only 解析边界（PR #865）。
+- OAS3 前端开发与 Knife4x UI 同步工具要求 Node `22.13+` 或 `24+`；TypeScript 继续沿用 `5.9`。
+
+OpenAPI 3.0 / 3.1 / 3.2 消费范围保持不变，OAS2 继续兼容维护。Knife4x Go `v0.8.6` 纳入同一套共享 UI，保持 Go `1.22`、module、Handler API 与路由语义不变。
+
+### 5.7.6
 
 `5.7.6` 是基于 `5.7.5` 的向后兼容补丁版本，修复 React 调试页的 JavaScript 格式化与表单快照写入，并收敛表单状态恢复与测试边界。同步发布 Knife4x Go `v0.8.5`。
 
@@ -678,7 +695,7 @@ Maven 坐标：
 <dependency>
     <groupId>com.baizhukui</groupId>
     <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
-    <version>5.7.6</version>
+    <version>5.7.7</version>
 </dependency>
 ```
 

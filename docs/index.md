@@ -25,7 +25,7 @@ features:
     link: /guide/migration
     linkText: 迁移指引
   - title: Spring Boot 2.7、3.4、3.5、4.0 都跑过
-    details: 14 个 smoke 模块覆盖 Boot 2.7.18 的 OAS2/OAS3/WebFlux/独立聚合、Boot 3.4.x/3.5.x Jakarta/Gateway WebFlux/Server Web MVC/WebFlux/独立聚合、Boot 4.0.7 WebMVC/Gateway/独立聚合组合。
+    details: 14 个 smoke 模块覆盖 Boot 2.7.18 的 OAS2/OAS3/WebFlux/独立聚合、Boot 3.4.x/3.5.x Jakarta/Gateway WebFlux/Server Web MVC/WebFlux/独立聚合、Boot 4.0.8 WebMVC/Gateway/独立聚合组合。
     link: /reference/compatibility
     linkText: 兼容矩阵
   - title: React + Vite 新前端
@@ -33,11 +33,11 @@ features:
     link: /release-notes/
     linkText: 发布说明
   - title: OpenAPI 3.1 契约
-    details: 5.7.6 对 OpenAPI 3.1.x 使用同一 JSON Schema 2020-12、受控外部资源、调试诊断与可移植交付契约，并公开已知限制。
+    details: 5.7.7 对 OpenAPI 3.1.x 使用同一 JSON Schema 2020-12、受控外部资源、调试诊断与可移植交付契约，并公开已知限制。
     link: /guide/openapi31
     linkText: 支持与迁移
   - title: OpenAPI 3.2 消费
-    details: 5.7.6 可按 3.2 语义消费合法文档，不降级成 3.1；不能把 springdoc 3.0/3.1 输出改版本号冒充 3.2 生成。
+    details: 5.7.7 可按 3.2 语义消费合法文档，不降级成 3.1；不能把 springdoc 3.0/3.1 输出改版本号冒充 3.2 生成。
     link: /guide/openapi32
     linkText: 支持矩阵
   - title: Gateway 与多服务聚合
@@ -46,7 +46,7 @@ features:
     linkText: 网关接入
 ---
 
-::: tip Knife4x Go v0.8.5
+::: tip Knife4x Go v0.8.6
 Go 服务现在也能嵌入同一套 React UI，通过标准库 `net/http` Handler 挂载
 UI、加载已有 OpenAPI 3 文档并提供调试控制台。[查看 Go 接入](/knife4x/)。
 :::
@@ -68,7 +68,7 @@ UI、加载已有 OpenAPI 3 文档并提供调试控制台。[查看 Go 接入](
 <dependency>
     <groupId>com.baizhukui</groupId>
     <artifactId>knife4j-openapi3-boot4-spring-boot-starter</artifactId>
-    <version>5.7.6</version>
+    <version>5.7.7</version>
 </dependency>
 ```
 
@@ -78,7 +78,7 @@ UI、加载已有 OpenAPI 3 文档并提供调试控制台。[查看 Go 接入](
 <dependency>
     <groupId>com.baizhukui</groupId>
     <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
-    <version>5.7.6</version>
+    <version>5.7.7</version>
 </dependency>
 ```
 
@@ -97,13 +97,13 @@ knife4j:
 
 启动应用后访问 `http://localhost:8080/doc.html`。完整流程见 [快速开始](/guide/getting-started)。
 
-## 5.7.6 版本亮点 <Badge type="tip" text="最新" />
+## 5.7.7 版本亮点 <Badge type="tip" text="最新" />
 
-`5.7.6` 修复调试页 JavaScript 格式化与表单快照写入，并收敛表单状态恢复。OpenAPI 3.1 / 3.2 消费仍从 `5.7.0` 起提供。同步发布 Knife4x Go `v0.8.5`。
+`5.7.7` 纳入 Java 依赖维护、共享 React UI 工具链迁移与 WebJar 增量打包修复。OpenAPI 3.1 / 3.2 消费仍从 `5.7.0` 起提供。同步发布 Knife4x Go `v0.8.6`。
 
-- 调试页 JavaScript 改用懒加载 Prettier，保留正则与 ASI 语义
-- JSON 保留词法细节；XML/HTML 保留原文并拒绝不安全格式化
-- 无 Web Locks 时合并相邻同键快照，收敛表单状态恢复
+- Boot4 依赖更新至 Spring Boot 4.0.8 / Spring Cloud 2025.1.3
+- 共享 React UI 迁移至 React 19 / Ant Design 6，并适配页签滚动与外部资源面板
+- 修复 React WebJar 增量打包残留分块与源码包构建输出清理
 
 完整更新列表见 [发布说明](/release-notes/)。
 

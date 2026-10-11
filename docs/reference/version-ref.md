@@ -8,7 +8,8 @@ title: 版本对照
 
 | knife4j-next 版本 | Spring Boot 2.x | Spring Boot 3.x | Spring Boot 4.x | 说明 |
 | --- | --- | --- | --- | --- |
-| `5.7.6` | ✅ 2.7.18 | ✅ 3.4.0 ~ 3.5.16 | ✅ 4.0.7 | 当前版本，React UI 调试格式化与表单快照补丁 |
+| `5.7.7` | ✅ 2.7.18 | ✅ 3.4.0 ~ 3.5.16 | ✅ 4.0.8 | 当前版本，依赖维护、共享 React UI 迁移与 WebJar 打包修复 |
+| `5.7.6` | ✅ 2.7.18 | ✅ 3.4.0 ~ 3.5.16 | ✅ 4.0.7 | React UI 调试格式化与表单快照补丁 |
 | `5.7.5` | ✅ 2.7.18 | ✅ 3.4.0 ~ 3.5.16 | ✅ 4.0.7 | React UI JSON 示例与预览折叠补丁 |
 | `5.7.4` | ✅ 2.7.18 | ✅ 3.4.0 ~ 3.5.16 | ✅ 4.0.7 | React UI 示例、诊断与调试响应补丁 |
 | `5.7.3` | ✅ 2.7.18 | ✅ 3.4.0 ~ 3.5.16 | ✅ 4.0.7 | React UI 标签菜单与首页布局补丁 |
@@ -50,13 +51,13 @@ title: 版本对照
 | `5.0.0` | ✅ 2.7.18 | ✅ 3.4.0 ~ 3.5.0 | ❌ | 首个正式稳定版本 |
 
 > knife4j-next 从 `5.0.0` 起采用独立 [SemVer](https://semver.org/lang/zh-CN/) 版本号，与上游 knife4j 版本号无关。
-> `5.7.6` 包含 Boot4 WebMVC starter、Boot4 Gateway starter、Boot4 独立聚合 starter，以及 Boot 3.5 Gateway Server Web MVC 聚合 starter；可直接使用 `com.baizhukui:knife4j-openapi3-boot4-spring-boot-starter:5.7.6`、`com.baizhukui:knife4j-gateway-boot4-spring-boot-starter:5.7.6`、`com.baizhukui:knife4j-aggregation-boot4-spring-boot-starter:5.7.6` 和 `com.baizhukui:knife4j-gateway-webmvc-spring-boot-starter:5.7.6`。
+> `5.7.7` 包含 Boot4 WebMVC starter、Boot4 Gateway starter、Boot4 独立聚合 starter，以及 Boot 3.5 Gateway Server Web MVC 聚合 starter；可直接使用 `com.baizhukui:knife4j-openapi3-boot4-spring-boot-starter:5.7.7`、`com.baizhukui:knife4j-gateway-boot4-spring-boot-starter:5.7.7`、`com.baizhukui:knife4j-aggregation-boot4-spring-boot-starter:5.7.7` 和 `com.baizhukui:knife4j-gateway-webmvc-spring-boot-starter:5.7.7`。
 
-## 待发布源码依赖更新
+## 5.7.7 依赖更新
 
-当前源码在已发布的 `5.7.6` 基线上更新了以下依赖；这些变更尚未发布，不属于下面的历史发布记录。
+`5.7.7` 在 `5.7.6` 基线上纳入以下同主版本依赖更新（PR #845）。
 
-| 依赖 | `5.7.6` 发布基线 | 当前源码 |
+| 依赖 | `5.7.6` 发布基线 | `5.7.7` 发布基线 |
 | --- | --- | --- |
 | Spring Boot（Boot4 线） | `4.0.7` | `4.0.8` |
 | Spring Cloud（Boot4 线） | `2025.1.2` | `2025.1.3` |
@@ -70,7 +71,7 @@ Boot3 Jakarta 线继续使用 springdoc `2.8.9`；`2.8.17` 在现有 Boot3 聚�
 
 ## 核心依赖版本
 
-以下为 `knife4j-next 5.7.6` 内部管理的依赖版本，用户一般不需要手动指定。
+以下为 `knife4j-next 5.7.7` 内部管理的依赖版本，用户一般不需要手动指定。
 
 ### Boot 2.x（非 Jakarta）线
 
@@ -99,29 +100,30 @@ Boot3 Jakarta 线继续使用 springdoc `2.8.9`；`2.8.17` 在现有 Boot3 聚�
 
 | 依赖 | 版本 |
 | --- | --- |
-| Spring Boot | `4.0.7` |
-| Spring Cloud | `2025.1.2`（Gateway 5.x） |
+| Spring Boot | `4.0.8` |
+| Spring Cloud | `2025.1.3`（Gateway 5.x） |
 | springdoc-openapi | `3.0.3` |
 | Swagger v3 models | `2.2.47` |
 | Servlet Jakarta API | `6.1.0` |
 
-> smoke-tests 中 `boot4-jakarta-app`、`boot4-gateway-app` 与 `boot4-aggregation-app` 使用 Boot `4.0.7`，通过验证。
+> smoke-tests 中 `boot4-jakarta-app`、`boot4-gateway-app` 与 `boot4-aggregation-app` 使用 Boot `4.0.8`，通过验证。
 
 ### 其他共享依赖
 
 | 依赖 | 版本 |
 | --- | --- |
 | Java 最低版本 | `1.8`（非 Jakarta）；`17`（Jakarta / Boot4） |
-| SLF4J | `2.0.18` |
-| Gson | `2.11.0` |
+| SLF4J | `2.0.20` |
+| Gson | `2.14.0` |
 | Javassist | `3.30.2-GA` |
-| Lombok | `1.18.46` |
+| Lombok | `1.18.48` |
 
 ## Upstream 版本对照
 
 | upstream 版本 | knife4j-next 版本 | 说明 |
 | --- | --- | --- |
-| `4.5.0`（上游 Maven Central 最后发布版本） | `5.7.6` | 当前版本：包含已合并兼容/安全修复、Boot 3.4/3.5/4.0 兼容、OAS 3.1 支持、OpenAPI 3.2.x 文档消费、SchemaEngine 元校验失败重试、Vue3 网关头与 Tag 搜索、React UI 标签菜单与首页布局、示例展示、Schema 诊断与调试 JSON 响应、JSON 示例与预览层级折叠，以及调试格式化与表单快照补丁 |
+| `4.5.0`（上游 Maven Central 最后发布版本） | `5.7.7` | 当前版本：依赖维护、共享 React UI 迁移与 WebJar 打包修复 |
+| `4.5.0` | `5.7.6` | 包含已合并兼容/安全修复、Boot 3.4/3.5/4.0 兼容、OAS 3.1 支持、OpenAPI 3.2.x 文档消费、SchemaEngine 元校验失败重试、Vue3 网关头与 Tag 搜索、React UI 标签菜单与首页布局、示例展示、Schema 诊断与调试 JSON 响应、JSON 示例与预览层级折叠，以及调试格式化与表单快照补丁 |
 | `4.5.0` | `5.7.5` | React UI JSON 示例与预览层级折叠补丁 |
 | `4.5.0` | `5.7.4` | React UI 示例展示、Schema 诊断与调试 JSON 响应补丁 |
 | `4.5.0` | `5.7.3` | React UI 标签菜单与首页布局补丁 |
