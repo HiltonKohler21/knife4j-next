@@ -49,3 +49,43 @@
     gap: 8px;
   }
 }
+
+.knife4j-resource-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.knife4j-resource-list > li {
+  align-items: center;
+  border-block-end: 1px solid var(--knife4j-resource-split);
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+}
+
+.knife4j-resource-list > li:last-child {
+  border-block-end: none;
+}
+
+.knife4j-resource-actions {
+  flex: 0 0 auto;
+  margin-inline-start: 48px;
+  padding-inline-end: 8px;
+}
+
+.knife4j-resource-list-empty {
+  padding: 16px;
+}
+
+@media (max-width: 768px) {
+  .knife4j-resource-actions {
+    margin-inline-start: 24px;
+  }
+}
+
+@media (max-width: 576px) {
+  .knife4j-resource-list > li {
+    flex-wrap: wrap;
+  }
+}
