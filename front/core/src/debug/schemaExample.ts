@@ -547,11 +547,12 @@ function buildFieldTreeInternal(schema: SchemaValue | undefined, ctx: InternalCt
   const type = effectiveSchemaType(resolved);
   const types = normalizeTypes(resolved.type);
 
-  // 顶层 object → 展开 properties；根 XML Object 单独占一行，不猜测字段名。
+  // 顶层 object → 展开 properties；根 XML 或值元数据单独占一行，不猜测字段名。
   if (type === 'object' || (type === 'unknown' && resolved.properties)) {
     const children = objectToFieldNodes(resolved, ctx, ref);
     const xml = schemaFieldXml(resolved);
-    if (!xml) return children;
+    if (!xml && resolved.default === undefined && !(Array.isArray(resolved.enum) && resolved.enum.length > 0))
+      return children;
     return [
       {
         name: '',
@@ -561,6 +562,8 @@ function buildFieldTreeInternal(schema: SchemaValue | undefined, ctx: InternalCt
         required: false,
         xml,
         description: typeof resolved.description === 'string' ? resolved.description : undefined,
+        default: resolved.default,
+        enum: Array.isArray(resolved.enum) ? resolved.enum : undefined,
         refName: refToName(ref),
       },
       ...children,
@@ -578,6 +581,8 @@ function buildFieldTreeInternal(schema: SchemaValue | undefined, ctx: InternalCt
         format: typeof resolved.format === 'string' ? resolved.format : undefined,
         required: false,
         description: typeof resolved.description === 'string' ? resolved.description : undefined,
+        default: resolved.default,
+        enum: Array.isArray(resolved.enum) ? resolved.enum : undefined,
         refName: refToName(ref),
       },
       resolved,
@@ -639,7 +644,23 @@ function buildTopLevelCompositionNodes(
   ctx: InternalCtx,
   ref: string | undefined,
 ): SchemaFieldNode[] {
+  const root: SchemaFieldNode[] =
+    resolved.default !== undefined || (Array.isArray(resolved.enum) && resolved.enum.length > 0)
+      ? [
+          {
+            name: '',
+            isRoot: true,
+            type: composition.kind,
+            required: false,
+            description: typeof resolved.description === 'string' ? resolved.description : undefined,
+            default: resolved.default,
+            enum: Array.isArray(resolved.enum) ? resolved.enum : undefined,
+            refName: refToName(ref),
+          },
+        ]
+      : [];
   return [
+    ...root,
     ...objectToFieldNodes(resolved, ctx, ref),
     ...buildCompositionBranchNodes(composition.kind, composition.branches, pushRefIfAny(ctx, ref)),
   ];
@@ -764,6 +785,8 @@ function buildSingleFieldNode(
         name,
         type: composition.kind,
         required,
+        default: resolved.default,
+        enum: Array.isArray(resolved.enum) ? resolved.enum : undefined,
         description,
         refDescription,
         refTitle,

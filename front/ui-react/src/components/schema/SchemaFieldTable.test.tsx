@@ -23,6 +23,7 @@ vi.mock('../../context/GroupContext', () => ({
 }));
 
 import SchemaFieldTable, { SchemaTypeLink } from './SchemaFieldTable';
+import SchemaValueDetails from './SchemaValueDetails';
 
 const doc = {
   openapi: '3.0.3',
@@ -59,6 +60,35 @@ function nameCells(fields: SchemaFieldNode[]) {
 }
 
 describe('schema field names', () => {
+  test('adds enum/default details to the description cell while preserving descriptions and flags', () => {
+    const schema = {
+      type: 'object',
+      properties: {
+        from: {
+          type: 'string',
+          description: '登录来源',
+          enum: ['mch_web', 'mch_app', 'mch_h5'],
+          default: 'mch_web',
+          example: 'mch_app',
+          deprecated: true,
+        },
+      },
+    };
+    const fields = buildSchemaFieldTree(schema, { doc });
+    const original = structuredClone(fields);
+    const table = SchemaFieldTable({ fields });
+    const row = table.props.dataSource[0];
+    const column = table.props.columns.find((value: { dataIndex?: string }) => value.dataIndex === 'description');
+    const cell = elements(column.render(row.description, row));
+    expect(cell.find((element) => element.type === 'DescriptionText')?.props.children).toBe('登录来源');
+    expect(cell.find((element) => element.type === SchemaValueDetails)?.props).toEqual({
+      enum: ['mch_web', 'mch_app', 'mch_h5'],
+      default: 'mch_web',
+    });
+    expect(cell.find((element) => element.type === 'Tag')?.props.children).toBe('schema.flag.deprecated');
+    expect(fields).toEqual(original);
+  });
+
   test.each(['Download', 'Text'])('labels the %s response root without inventing an items field', (name) => {
     const fields = buildSchemaFieldTree({ $ref: `#/components/schemas/${name}` }, { doc });
     const [cell] = nameCells(fields);

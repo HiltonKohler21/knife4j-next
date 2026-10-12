@@ -31,6 +31,8 @@ import DescriptionText from '../../components/DescriptionText';
 import Markdown from '../../components/Markdown';
 import { copyToClipboard } from '../../utils/clipboard';
 import SchemaFieldTable, { SchemaTypeLink } from '../../components/schema/SchemaFieldTable';
+import SchemaValueDetails, { type SchemaValueDetailsProps } from '../../components/schema/SchemaValueDetails';
+import { apiDocParameterValues } from './apiDocParameterValues';
 import SchemaExampleNotice from '../../components/schema/SchemaExampleNotice';
 import OperationExamplePicker from '../../components/schema/OperationExamplePicker';
 import SchemaDiscriminatorPanel from '../../components/schema/SchemaDiscriminatorPanel';
@@ -82,7 +84,7 @@ const IDLE_EXAMPLE_STATE: ApiDocExampleState = Object.freeze({ status: 'idle' })
 
 type ApiDocSchemaValue = SchemaObject | boolean;
 
-interface ParamRow {
+interface ParamRow extends SchemaValueDetailsProps {
   key: string;
   name: string;
   in: string;
@@ -466,6 +468,7 @@ function ApiDocContent({ swaggerDoc, operation }: { swaggerDoc: SwaggerDoc; oper
               {record.refDescription}
             </DescriptionText>
           )}
+          <SchemaValueDetails enum={record.enum} default={record.default} />
         </Space>
       ),
     },
@@ -512,6 +515,10 @@ function ApiDocContent({ swaggerDoc, operation }: { swaggerDoc: SwaggerDoc; oper
       description: parameter.description ?? '',
       refDescription: refDescription !== parameter.description ? refDescription : undefined,
       refTitle,
+      ...apiDocParameterValues(
+        parameter,
+        schemaDocuments.parameters.get(`${parameter.in}:${parameter.name}`) ?? schemaDocuments.operation,
+      ),
     };
   });
   const bodySchema = useMemo(() => firstRequestSchema(op.requestBody, op.parameters), [op.parameters, op.requestBody]);
