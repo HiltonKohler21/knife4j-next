@@ -76,8 +76,7 @@ def fixtures(root):
     module = root / MODULE_PATH
     dist = root / "fixture-dist"
     resources = module / "src/main/resources"
-    # Remove only this isolated copy's icons so synthetic generations can remove icons.
-    shutil.rmtree(resources / "img/icons")
+    # Keep legacy source icons: default-resources must not copy these generated paths.
     static = {"custom/keep.txt": b"static resource", "img/custom/keep.txt": b"static image"}
     write(resources, static)
     output = module / "target/classes" / PREFIX
@@ -88,7 +87,7 @@ def fixtures(root):
         # Real configured cleanup/copy/JAR goals; source:jar forks to generate-sources.
         run("mvn", "-B", "-ntp", "-f", str(module / "pom.xml"),
             f"-Dknife4j-vue3.outDir={dist}", "initialize",
-            "clean:clean@wipe-vue3-webjar-output", "resources:resources",
+            "resources:resources", "clean:clean@wipe-vue3-webjar-output",
             "resources:copy-resources@copy-vue3-doc-html",
             "resources:copy-resources@copy-vue3-img-icons",
             "resources:copy-resources@copy-vue3-webjars", "jar:jar", "source:jar@attach-sources",
@@ -148,6 +147,22 @@ def workspace(root):
     # Corrupt files that must be overwritten as well as adding obsolete files.
     write(output, {"doc.html": b"stale doc", "knife4j-next-logo.svg": b"stale logo"})
     package("hot package")
+    external = root / "external"
+    write(external, {"keep.txt": b"external target must stay unchanged"})
+    for name in ("webjars", "img/icons"):
+        generated = output / name
+        shutil.rmtree(generated)
+        generated.symlink_to(external, target_is_directory=True)
+    # Prove default-resources cannot write legacy root assets through file links either.
+    write(module / "src/main/resources", {"knife4j-next-logo.svg": b"legacy source logo"})
+    (output / "knife4j-next-logo.svg").unlink()
+    (output / "knife4j-next-logo.svg").symlink_to(external / "keep.txt")
+    package("hot package with root symlinks")
+    equal(files(external), {"keep.txt": b"external target must stay unchanged"},
+          "Real package external symlink target")
+    for name in ("webjars", "img/icons", "knife4j-next-logo.svg"):
+        if (output / name).is_symlink():
+            raise AssertionError(f"Real package retained generated symlink: {name}")
 
 
 def main():

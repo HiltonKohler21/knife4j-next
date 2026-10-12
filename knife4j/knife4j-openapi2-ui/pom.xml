@@ -24,19 +24,17 @@
                 <directory>${project.basedir}/src/main/resources</directory>
                 <targetPath>META-INF/resources/</targetPath>
                 <!--
-                    Exclude legacy Vue 2 build artifacts that may have been committed to
-                    src/main/resources/webjars/ by mistake. They are now considered generated
-                    output (.gitignore covers them), and the canonical source of truth is the
-                    vite build that writes to ${knife4j-vue3.outDir}. See the maven-clean-plugin
-                    execution below for the hard cleanup.
+                    Vue3 owns these generated paths; only copy them from the current dist.
+                    Maven's default-resources runs before the process-resources cleanup, so
+                    copying legacy source assets here could write through output symlinks.
                 -->
                 <excludes>
                     <exclude>doc.html</exclude>
-                    <exclude>webjars/js/**</exclude>
-                    <exclude>webjars/css/**</exclude>
-                    <exclude>webjars/img/**</exclude>
-                    <exclude>webjars/fonts/**</exclude>
-                    <exclude>webjars/oauth/**</exclude>
+                    <exclude>favicon.ico</exclude>
+                    <exclude>knife4j-next-mark.svg</exclude>
+                    <exclude>knife4j-next-logo.svg</exclude>
+                    <exclude>img/icons/**</exclude>
+                    <exclude>webjars/**</exclude>
                 </excludes>
             </resource>
         </resources>
