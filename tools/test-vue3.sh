@@ -24,3 +24,6 @@ if [ ! -d "dist/webjars" ]; then
   echo "Missing expected Vue3 build artifact: dist/webjars" >&2
   exit 1
 fi
+
+# Execute the production ES modules and verify Springfox + desktop startup.
+node --experimental-vm-modules scripts/check-webjar-smoke.mjs dist

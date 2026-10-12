@@ -1,0 +1,17 @@
+{
+  "swagger": "2.0",
+  "info": {"title": "Vite compatibility fixture", "version": "1.0.0", "description": "Local evaluation of API rendering, JSON debug and exports."},
+  "basePath": "/api", "schemes": ["http"],
+  "tags": [{"name": "Compatibility", "description": "Local API evaluation"}],
+  "paths": {"/echo": {"post": {
+    "tags": ["Compatibility"], "operationId": "echo", "summary": "Echo JSON",
+    "consumes": ["application/json"], "produces": ["application/json"],
+    "parameters": [{"name": "body", "in": "body", "required": true, "schema": {"$ref": "#/definitions/Pet"}}],
+    "responses": {"200": {"description": "Echo response", "schema": {"$ref": "#/definitions/Pet"}}}
+  }}},
+  "definitions": {"Pet": {"type": "object", "required": ["name"], "properties": {
+    "name": {"type": "string", "example": "Milo"}, "age": {"type": "integer", "format": "int32", "example": 3}
+  }}},
+  "securityDefinitions": {"api_key": {"type": "apiKey", "name": "X-Api-Key", "in": "header"}},
+  "security": [{"api_key": []}]
+}

@@ -8,6 +8,10 @@ import removeConsole from 'vite-plugin-remove-console';
 import path, {resolve} from 'path'
 import {nodePolyfills} from 'vite-plugin-node-polyfills'
 import fs from 'fs'
+import { fileURLToPath } from 'url'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const browserTargets = ['chrome111', 'edge111', 'firefox114', 'safari16.4']
 
 /**
  * 把 Vite 默认把 public/oauth 复制到 dist/oauth 的产物
@@ -90,7 +94,9 @@ export default defineConfig({
     }
   },
   build: {
-    rollupOptions: {
+    target: browserTargets,
+    cssTarget: browserTargets,
+    rolldownOptions: {
       input: 'doc.html',
       output: {
         chunkFileNames: 'webjars/js/[name]-[hash].js',
