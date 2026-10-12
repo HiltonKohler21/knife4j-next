@@ -33,6 +33,21 @@ describe('componentSchemaReference', () => {
 });
 
 describe('SchemaDisplayProjector', () => {
+  test('preserves declared object/composition root values in shared field tables', async () => {
+    const object = { type: 'object', properties: { enabled: { type: 'boolean' } }, default: { enabled: false } };
+    const composition = { oneOf: [{ type: 'string' }, { type: 'integer' }], enum: ['a', 0], default: 0 };
+    const projector = await projectorFor({ Object: object, Composition: composition });
+    expect((await projector.project(componentSchemaReference('Object'))).fields[0]).toMatchObject({
+      isRoot: true,
+      default: object.default,
+    });
+    expect((await projector.project(componentSchemaReference('Composition'))).fields[0]).toMatchObject({
+      isRoot: true,
+      enum: ['a', 0],
+      default: 0,
+    });
+  });
+
   test('marks only anonymous roots across 3.1 references, arrays, and boolean schemas', async () => {
     const schemas = {
       Binary: { contentMediaType: 'application/zip', description: 'ZIP 文件流' },

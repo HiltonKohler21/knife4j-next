@@ -53,6 +53,7 @@ vi.mock('./CodeBlock', () => ({ default: 'CodeBlock' }));
 import ApiDoc from './ApiDoc';
 import { parseMenuTags } from '../../api/knife4jClient';
 import { ExternalResourceLoader } from '../../schema/externalResourceGraph';
+import SchemaValueDetails from '../../components/schema/SchemaValueDetails';
 
 interface Element {
   type: unknown;
@@ -100,6 +101,49 @@ function fixture(summary: unknown): SwaggerDoc {
 }
 
 describe('ApiDoc Response metadata rendering', () => {
+  test.each(['3.0.3', '3.1.0', '3.2.0'])(
+    'passes parameter Schema values into the description cell in OAS %s',
+    (openapi) => {
+      const document: SwaggerDoc = {
+        openapi,
+        info: { title: 'Parameter values', version: '1' },
+        paths: {
+          '/login': {
+            get: {
+              parameters: [
+                {
+                  name: 'from',
+                  in: 'query',
+                  description: '登录来源',
+                  schema: {
+                    type: 'string',
+                    enum: ['mch_web', 'mch_app', 'mch_h5'],
+                    default: 'mch_web',
+                    example: 'mch_app',
+                  },
+                },
+              ],
+              responses: { '200': { description: 'OK' } },
+            },
+          },
+        },
+      };
+      const original = structuredClone(document);
+      const table = render(document).find((element) => element.type === 'Table')!;
+      const row = (table.props.dataSource as { description: string }[])[0];
+      const column = (
+        table.props.columns as { dataIndex?: string; render: (value: string, row: unknown) => unknown }[]
+      ).find((item) => item.dataIndex === 'description')!;
+      const cell = elements(column.render(row.description, row));
+      expect(cell.find((element) => element.type === 'DescriptionText')?.props.children).toBe('登录来源');
+      expect(cell.find((element) => element.type === SchemaValueDetails)?.props).toEqual({
+        enum: ['mch_web', 'mch_app', 'mch_h5'],
+        default: 'mch_web',
+      });
+      expect(document).toEqual(original);
+    },
+  );
+
   test.each([
     ['object', { bad: true }],
     ['array', ['not a summary']],

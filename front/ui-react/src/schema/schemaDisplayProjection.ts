@@ -305,7 +305,9 @@ function rootFields(node: SchemaFieldNode): SchemaFieldNode[] {
     .every((keyword) => COMPOSITION_KEYWORDS.includes(keyword as CompositionKeyword));
   if (node.type === 'object' || composition) {
     const children = node.children ?? [];
-    return node.xml ? [{ ...node, isRoot: true, children: undefined }, ...children] : children;
+    return node.xml || node.default !== undefined || (node.enum && node.enum.length > 0)
+      ? [{ ...node, isRoot: true, children: undefined }, ...children]
+      : children;
   }
   return [{ ...node, isRoot: true }];
 }

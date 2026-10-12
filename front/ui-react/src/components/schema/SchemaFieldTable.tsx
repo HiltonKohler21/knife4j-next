@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { useGroup } from '../../context/GroupContext';
 import type { SchemaObject, SwaggerDoc } from '../../types/swagger';
 import DescriptionText from '../DescriptionText';
+import SchemaValueDetails from './SchemaValueDetails';
 import {
   SCHEMA_FIELD_COLUMN_MIN_WIDTHS,
   schemaFieldTableLayout,
@@ -315,7 +316,7 @@ export default function SchemaFieldTable({ fields, emptyText }: SchemaFieldTable
       width: columnWidths.description,
       onHeaderCell: () => resizableHeader('description'),
       render: (value, record) => (
-        <Space size={6} wrap>
+        <Space size={4} orientation="vertical" style={{ width: '100%' }}>
           {value ? <DescriptionText>{value}</DescriptionText> : <Text type="secondary">-</Text>}
           {record.refDescription && record.refDescription !== value && (
             <DescriptionText type="secondary" style={{ fontSize: 12 }}>
@@ -323,10 +324,15 @@ export default function SchemaFieldTable({ fields, emptyText }: SchemaFieldTable
               {record.refDescription}
             </DescriptionText>
           )}
-          {record.deprecated && <Tag color="red">{t('schema.flag.deprecated')}</Tag>}
-          {record.readOnly && <Tag color="default">{t('schema.flag.readOnly')}</Tag>}
-          {record.writeOnly && <Tag color="default">{t('schema.flag.writeOnly')}</Tag>}
-          {record.truncated && <Tag color="warning">{t('schema.flag.truncated')}</Tag>}
+          <SchemaValueDetails enum={record.enum} default={record.default} />
+          {(record.deprecated || record.readOnly || record.writeOnly || record.truncated) && (
+            <Space size={6} wrap>
+              {record.deprecated && <Tag color="red">{t('schema.flag.deprecated')}</Tag>}
+              {record.readOnly && <Tag color="default">{t('schema.flag.readOnly')}</Tag>}
+              {record.writeOnly && <Tag color="default">{t('schema.flag.writeOnly')}</Tag>}
+              {record.truncated && <Tag color="warning">{t('schema.flag.truncated')}</Tag>}
+            </Space>
+          )}
         </Space>
       ),
     },
