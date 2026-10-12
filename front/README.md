@@ -24,6 +24,20 @@ bun run --filter knife4j-ui-react dev
 ./tools/test-front-core.sh
 ```
 
+OAS3 的 core、schema-engine 和 ui-react 使用官方双别名：`@typescript/native`
+固定为 TypeScript 7.0.2，`typescript` 指向 `@typescript/typescript6` 6.0.2
+兼容包（锁文件固定其实际 TypeScript API 为 6.0.3）。生产编译与 Go 资源同步
+统一调用 `scripts/tsc.cjs`，通过原生包的导出 manifest 定位 TS7 CLI。
+ESLint 和 ts-jest 继续加载 `typescript` 的 TS6 API，保留现有规则、转换和诊断；
+这部分不获得原生编译器的提速。不要把 ts-jest 的 compiler 改为原生包。
+方案见 [TypeScript 7 官方公告](https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/)。
+
+```bash
+cd front
+node scripts/tsc.cjs --version # TS7 生产编译器
+node -p "require('typescript').version" # lint/Jest 使用的 TS6 API
+```
+
 ## OAS2（vue3）
 
 ```bash

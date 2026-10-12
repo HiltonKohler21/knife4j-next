@@ -46,8 +46,7 @@ bun run --filter knife4j-core build
 bun run --filter knife4j-schema-engine build
 
 cd "$ui_root"
-typescript_bin="$("$node_bin" -p "require.resolve('typescript/bin/tsc')")"
-"$node_bin" "$typescript_bin"
+"$node_bin" "$front_root/scripts/tsc.cjs"
 "$node_bin" "$front_root/node_modules/vite/bin/vite.js" build --outDir="$build_dir" --emptyOutDir
 
 index_html="$build_dir/index.html"

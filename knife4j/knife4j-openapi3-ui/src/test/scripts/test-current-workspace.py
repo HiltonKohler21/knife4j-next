@@ -71,7 +71,7 @@ def main():
         # caller's ignored lib/node_modules/target output or local environment.
         paths = subprocess.check_output([
             "git", "ls-files", "--cached", "--others", "--exclude-standard", "-z",
-            "front/package.json", "front/bun.lock",
+            "front/package.json", "front/bun.lock", "front/scripts",
             "front/core", "front/schema-engine", "front/ui-react",
             "knife4j/pom.xml", "knife4j/src/main/resources", str(MODULE_PATH / "pom.xml"),
             str(MODULE_PATH / "src/main/resources"),
