@@ -24,19 +24,17 @@
                 <directory>${project.basedir}/src/main/resources</directory>
                 <targetPath>META-INF/resources/</targetPath>
                 <!--
-                    Exclude legacy Vue 2 build artifacts that may have been committed to
-                    src/main/resources/webjars/ by mistake. They are now considered generated
-                    output (.gitignore covers them), and the canonical source of truth is the
-                    vite build that writes to ${knife4j-vue3.outDir}. See the maven-clean-plugin
-                    execution below for the hard cleanup.
+                    Vue3 owns these generated paths; only copy them from the current dist.
+                    Maven's default-resources runs before the process-resources cleanup, so
+                    copying legacy source assets here could write through output symlinks.
                 -->
                 <excludes>
                     <exclude>doc.html</exclude>
-                    <exclude>webjars/js/**</exclude>
-                    <exclude>webjars/css/**</exclude>
-                    <exclude>webjars/img/**</exclude>
-                    <exclude>webjars/fonts/**</exclude>
-                    <exclude>webjars/oauth/**</exclude>
+                    <exclude>favicon.ico</exclude>
+                    <exclude>knife4j-next-mark.svg</exclude>
+                    <exclude>knife4j-next-logo.svg</exclude>
+                    <exclude>img/icons/**</exclude>
+                    <exclude>webjars/**</exclude>
                 </excludes>
             </resource>
         </resources>
@@ -64,6 +62,34 @@
                                         <include>img/**</include>
                                         <include>fonts/**</include>
                                         <include>oauth/**</include>
+                                    </includes>
+                                    <followSymlinks>false</followSymlinks>
+                                </fileset>
+                            </filesets>
+                        </configuration>
+                    </execution>
+                    <!-- Source JAR generation forks through generate-sources. Remove
+                         copied Vue3 output only immediately before copying the new dist. -->
+                    <execution>
+                        <id>wipe-vue3-webjar-output</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                        <configuration>
+                            <excludeDefaultDirectories>true</excludeDefaultDirectories>
+                            <filesets>
+                                <fileset>
+                                    <directory>${project.build.outputDirectory}/META-INF/resources</directory>
+                                    <includes>
+                                        <include>webjars</include>
+                                        <include>webjars/**</include>
+                                        <include>img/icons</include>
+                                        <include>img/icons/**</include>
+                                        <include>doc.html</include>
+                                        <include>favicon.ico</include>
+                                        <include>knife4j-next-mark.svg</include>
+                                        <include>knife4j-next-logo.svg</include>
                                     </includes>
                                     <followSymlinks>false</followSymlinks>
                                 </fileset>
