@@ -70,6 +70,34 @@
                             </filesets>
                         </configuration>
                     </execution>
+                    <!-- Source JAR generation forks through generate-sources. Remove
+                         copied Vue3 output only immediately before copying the new dist. -->
+                    <execution>
+                        <id>wipe-vue3-webjar-output</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                        <configuration>
+                            <excludeDefaultDirectories>true</excludeDefaultDirectories>
+                            <filesets>
+                                <fileset>
+                                    <directory>${project.build.outputDirectory}/META-INF/resources</directory>
+                                    <includes>
+                                        <include>webjars</include>
+                                        <include>webjars/**</include>
+                                        <include>img/icons</include>
+                                        <include>img/icons/**</include>
+                                        <include>doc.html</include>
+                                        <include>favicon.ico</include>
+                                        <include>knife4j-next-mark.svg</include>
+                                        <include>knife4j-next-logo.svg</include>
+                                    </includes>
+                                    <followSymlinks>false</followSymlinks>
+                                </fileset>
+                            </filesets>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
             <!-- Step 1: vite build with outDir pointing to Maven target -->
