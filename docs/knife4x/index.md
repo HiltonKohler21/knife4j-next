@@ -24,6 +24,9 @@ Go module 需要 Go 1.22 或更高版本：
 go get github.com/songxychn/knife4j-next/knife4x/go@v0.8.6
 ```
 
+仓库中的 [Gin 可运行示例](https://github.com/songxychn/knife4j-next/tree/master/knife4x/examples/gin)
+是独立 module，需要 Go 1.26+；其 Gin 依赖与版本要求不会传递给公共库消费者。
+
 ## v0.8.6
 
 Go 1.22 基线、module 路径、`Config`、`NewHandler` 与路由语义保持不变。
