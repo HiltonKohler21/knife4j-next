@@ -185,6 +185,7 @@ jobs:
         uses: actions/setup-go@v6
         with:
           go-version: ${{ matrix.go-version }}
+          check-latest: true
           cache: false
 
       - name: Set up Node.js
