@@ -48,13 +48,25 @@ public OpenAPI customOpenAPI() {
 
 ### 生成 OpenAPI 3.1 文档
 
-`springdoc.api-docs.version` 是 springdoc 配置，不是 `knife4j.*` 配置。Boot 3 / springdoc 2.8.9 项目需要显式开启：
+`springdoc.api-docs.version` 是 springdoc 配置，不是 `knife4j.*` 配置。Boot 3 项目可显式配置生成版本（`5.7.7` 使用 springdoc `2.8.9`，待发布源码使用 `2.9.1`）：
 
 ```yaml
 springdoc:
   api-docs:
     version: OPENAPI_3_1
 ```
+
+待发布源码使用 springdoc `2.9.1` / Swagger Jakarta `2.2.55` 时，OAS 3.1 的 raw Java `Object`
+字段和 `List<Object>` 元素默认不声明类型，允许任意 JSON 值。需要保留旧的“仅 JSON 对象”
+契约时，可按应用需要显式配置；该配置也影响该应用内其他 raw Object Schema：
+
+```yaml
+springdoc:
+  explicit-object-schema: true
+```
+
+该选择仅收紧文档 Schema，不改变 Java 字段的实际反序列化能力。若业务明确只允许 JSON 对象，
+也可在对应字段上使用 `@Schema(type = "object")`，而无需对整个应用强制配置。
 
 Boot 4 / springdoc 3.0.3 的默认与显式 `OPENAPI_3_1` 路径都已经验证；显式配置有助于让意图不受依赖默认值变化影响。
 Boot 2 / springdoc 1.8.0 继续生成 OpenAPI 3.0，不能只改文档版本字符串。完整生成矩阵、JSON Schema 方言、

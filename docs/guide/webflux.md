@@ -16,6 +16,14 @@ title: WebFlux 接入
 1. 引入 springdoc 的 **WebFlux 版** swagger-ui 自动配置（而不是 webmvc 版）。
 2. 把本仓库的 `knife4j-openapi3-ui` webjar（React 新前端）挂上去，以取代 springdoc 默认 Swagger UI。
 
+::: info 待发布源码升级
+当前源码的 Boot3 Jakarta WebMVC、WebFlux 与独立聚合使用 springdoc `2.9.1`，Swagger Jakarta
+`annotations` / `models` / `core` 统一为 `2.2.55`。JDK 下限仍为 17；Boot 3.4 线下限为
+`3.4.7`，Boot 3.5 线下限为 `3.5.1`（共同需要 Framework `6.2.8`）。Boot `3.5.0` 不满足此下限。
+这是待发布源码的要求；本页 `5.7.7` 及更早版本的历史依赖与兼容记录保持原样。
+详见[版本对照](../reference/version-ref#待发布源码依赖更新)。
+:::
+
 ## 和普通 WebMvc 版本的区别
 
 ```diff

@@ -7,7 +7,7 @@
       "post": {
         "tags": ["oas-31-matrix-controller"],
         "summary": "Raw binary requestBody compatibility",
-        "operationId": "rawBinary",
+        "operationId": "Oas31MatrixController_rawBinary",
         "requestBody": {
           "content": { "application/octet-stream": { "schema": { "type": "string", "format": "binary" } } },
           "required": true
@@ -24,7 +24,7 @@
       "post": {
         "tags": ["oas-31-matrix-controller"],
         "summary": "Multipart single and multiple file compatibility",
-        "operationId": "multipart",
+        "operationId": "Oas31MatrixController_multipart",
         "requestBody": {
           "content": {
             "multipart/form-data": {
@@ -51,7 +51,7 @@
       "post": {
         "tags": ["oas-31-matrix-controller"],
         "summary": "JSON requestBody compatibility",
-        "operationId": "json",
+        "operationId": "Oas31MatrixController_json",
         "requestBody": {
           "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Oas31MatrixRequest" } } },
           "required": true
@@ -68,7 +68,7 @@
       "get": {
         "tags": ["oas-31-matrix-controller"],
         "summary": "GET requestBody compatibility",
-        "operationId": "search",
+        "operationId": "Oas31MatrixController_search",
         "parameters": [
           {
             "name": "limit",
@@ -118,12 +118,12 @@
         "description": "OAS 3.1 request matrix",
         "properties": {
           "nullableName": { "type": ["string", "null"], "description": "Nullable string", "examples": ["matrix"] },
-          "metadata": { "type": "object", "description": "Intentionally generic object" },
+          "metadata": { "description": "Intentionally generic object" },
           "mode": { "type": "string", "const": "stable", "description": "Constant mode", "examples": ["stable"] },
           "tuple": {
             "type": "array",
             "description": "Tuple value",
-            "items": { "type": "object" },
+            "items": {},
             "maxItems": 2,
             "minItems": 2,
             "prefixItems": [{}, {}]
@@ -131,5 +131,6 @@
         }
       }
     }
-  }
+  },
+  "x-openapi": { "x-markdownFiles": [] }
 }

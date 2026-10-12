@@ -117,7 +117,7 @@ func TestOpenAPIFixtureMatchesCanonicalSpringdocSnapshot(t *testing.T) {
 		"src",
 		"test-fixtures",
 		"springdoc-oas31",
-		"boot3-mvc-springdoc-2.8.9.json",
+		"boot3-mvc-springdoc-2.9.1.json",
 	)
 	canonical, err := os.ReadFile(canonicalPath)
 	if err != nil {

@@ -27,7 +27,9 @@ OpenAPI defines its feature set at the `major.minor` level. `3.2.x` shares one *
 
 ## Specification fixtures versus generator output
 
-Java production dependencies remain springdoc `1.8.0` / `2.8.9` / Boot4 `3.0.3`. They currently emit OpenAPI 3.0.x or 3.1.x. Changing the `openapi` string in `/v3/api-docs` to `3.2.0` is **not** real 3.2 generation evidence.
+Unreleased source uses Boot3 springdoc `2.9.1` with Swagger Jakarta `2.2.55`; its generated output remains OAS 3.1, with [updated Boot minimums](../reference/version-ref#待发布源码依赖更新).
+
+Java `5.7.7` dependencies remain springdoc `1.8.0` / `2.8.9` / Boot4 `3.0.3`. They currently emit OpenAPI 3.0.x or 3.1.x. Changing the `openapi` string in `/v3/api-docs` to `3.2.0` is **not** real 3.2 generation evidence.
 
 | Source | Actual output | Use in this roadmap |
 | --- | --- | --- |

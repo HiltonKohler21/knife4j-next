@@ -73,6 +73,13 @@ public class Boot3WebFluxJakartaDocHttpSmokeTest {
     }
 
     @Test
+    public void shouldUseSupportedBootBomRuntime() {
+        Assert.assertEquals("3.4.7", org.springframework.boot.SpringBootVersion.getVersion());
+        Assert.assertEquals("6.2.8", org.springframework.core.SpringVersion.getVersion());
+        Assert.assertEquals("6.2.8", org.springframework.web.util.pattern.PathPattern.class.getPackage().getImplementationVersion());
+    }
+
+    @Test
     public void shouldServeDocHtmlAndOpenApiJson() throws IOException {
         context = new SpringApplicationBuilder(TestApplication.class)
                 .web(WebApplicationType.REACTIVE)
@@ -124,7 +131,7 @@ public class Boot3WebFluxJakartaDocHttpSmokeTest {
         Assert.assertFalse(document.path("paths").path("/oas31/raw-binary").path("post").isMissingNode());
         Assert.assertFalse(document.path("paths").path("/oas31/multipart").path("post").isMissingNode());
         assertOas31MatrixContract(document);
-        assertMatchesOas31Fixture(document, "boot3-webflux-springdoc-2.8.9.json", port);
+        assertMatchesOas31Fixture(document, "boot3-webflux-springdoc-2.9.1.json", port);
     }
 
     private void assertOas31MatrixContract(JsonNode document) {
@@ -140,7 +147,8 @@ public class Boot3WebFluxJakartaDocHttpSmokeTest {
         Assert.assertEquals("string", requestProperties.path("nullableName").path("type").path(0).asText());
         Assert.assertEquals("null", requestProperties.path("nullableName").path("type").path(1).asText());
         Assert.assertEquals("matrix", requestProperties.path("nullableName").path("examples").path(0).asText());
-        Assert.assertEquals("object", requestProperties.path("metadata").path("type").asText());
+        Assert.assertFalse(requestProperties.path("metadata").has("type"));
+        Assert.assertFalse(requestProperties.path("tuple").path("items").has("type"));
         Assert.assertEquals("stable", requestProperties.path("mode").path("const").asText());
         Assert.assertEquals("stable", requestProperties.path("mode").path("examples").path(0).asText());
         Assert.assertEquals(2, requestProperties.path("tuple").path("prefixItems").size());

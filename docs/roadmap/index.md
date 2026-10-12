@@ -87,7 +87,7 @@ Java `5.7.0` 与 Knife4x Go `v0.8.0` 接入 OpenAPI 3.2.x 完整消费。真实 
 | 范围 | 状态 | 契约 |
 | --- | --- | --- |
 | 规范 3.2 夹具消费 | ✅ | React / WebJar / starter 合成入口 / Disk 聚合 / Knife4x SpecURL |
-| 真实 springdoc 3.2 生成 | 未做 | 当前 POM 仍为 1.8.0 / 2.8.9 / 3.0.3，只证明 3.0/3.1 生成 |
+| 真实 springdoc 3.2 生成 | 未做 | 当前源码 POM 为 1.8.0 / 2.9.1 / 3.0.3，只证明 3.0/3.1 生成 |
 | 用户矩阵与限制 | ✅ | [OpenAPI 3.2 支持矩阵](../guide/openapi32) |
 
 ---

@@ -79,6 +79,13 @@ public class Boot3JakartaDocHttpSmokeTest {
     }
 
     @Test
+    public void shouldUseSupportedBootBomRuntime() {
+        Assert.assertEquals("3.4.7", org.springframework.boot.SpringBootVersion.getVersion());
+        Assert.assertEquals("6.2.8", org.springframework.core.SpringVersion.getVersion());
+        Assert.assertEquals("6.2.8", org.springframework.web.util.pattern.PathPattern.class.getPackage().getImplementationVersion());
+    }
+
+    @Test
     public void shouldServeDocHtmlAndOpenApiJson() throws IOException {
         context = new SpringApplicationBuilder(TestApplication.class)
                 .web(WebApplicationType.SERVLET)
@@ -130,8 +137,8 @@ public class Boot3JakartaDocHttpSmokeTest {
         Assert.assertFalse(document.path("paths").path("/oas31/json").path("post").isMissingNode());
         Assert.assertFalse(document.path("paths").path("/oas31/raw-binary").path("post").isMissingNode());
         Assert.assertFalse(document.path("paths").path("/oas31/multipart").path("post").isMissingNode());
-        assertOas31MatrixContract(document, true);
-        assertMatchesOas31Fixture(document, "boot3-mvc-springdoc-2.8.9.json", port);
+        assertOas31MatrixContract(document);
+        assertMatchesOas31Fixture(document, "boot3-mvc-springdoc-2.9.1.json", port);
     }
 
     @Test
@@ -412,7 +419,7 @@ public class Boot3JakartaDocHttpSmokeTest {
         return get(port, path, null, null);
     }
 
-    private void assertOas31MatrixContract(JsonNode document, boolean genericObjectHasType) {
+    private void assertOas31MatrixContract(JsonNode document) {
         JsonNode requestSchema = document.path("components").path("schemas").path("Oas31MatrixRequest");
         JsonNode responseSchema = document.path("components").path("schemas").path("Oas31MatrixResponse");
         JsonNode requestProperties = requestSchema.path("properties");
@@ -420,7 +427,8 @@ public class Boot3JakartaDocHttpSmokeTest {
         Assert.assertEquals("string", requestProperties.path("nullableName").path("type").path(0).asText());
         Assert.assertEquals("null", requestProperties.path("nullableName").path("type").path(1).asText());
         Assert.assertEquals("matrix", requestProperties.path("nullableName").path("examples").path(0).asText());
-        Assert.assertEquals(genericObjectHasType, requestProperties.path("metadata").has("type"));
+        Assert.assertFalse(requestProperties.path("metadata").has("type"));
+        Assert.assertFalse(requestProperties.path("tuple").path("items").has("type"));
         Assert.assertEquals("stable", requestProperties.path("mode").path("const").asText());
         Assert.assertEquals("stable", requestProperties.path("mode").path("examples").path(0).asText());
         Assert.assertEquals(2, requestProperties.path("tuple").path("prefixItems").size());

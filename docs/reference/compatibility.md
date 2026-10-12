@@ -33,9 +33,16 @@ OpenAPI 3.2 消费从 Java `5.7.0` 起提供，
 Boot3 Jakarta 线继续使用 springdoc `2.8.9`；完整依赖清单见[版本对照](./version-ref#5-7-7-依赖更新)。
 :::
 
+::: info 待发布源码支持下限
+当前源码的 Boot3 Jakarta MVC、WebFlux、独立聚合已升级至 springdoc `2.9.1`，Swagger Jakarta
+三件套统一为 `2.2.55`。Boot 3.4 线要求 `3.4.7+`，Boot 3.5 线要求 `3.5.1+`，
+对应 Framework `6.2.8`；Boot `3.5.0` 仍会触发路径模式组合错误。Boot4 springdoc 保持 `3.0.3`。
+上表及 `5.7.7` 历史记录保持原样；完整源码差异见[待发布源码依赖更新](./version-ref#待发布源码依赖更新)。
+:::
+
 ## Starter 兼容矩阵
 
-以下矩阵基于 `knife4j-smoke-tests` 模块的自动化验证结果。✅ = smoke test 已通过；⚠️ = 依赖层面可用但无自动测试；❌ = 不兼容。
+以下 starter 矩阵描述当前源码，Boot3 生成器线按上述下限接入；历史发布版本见[版本对照](./version-ref)。矩阵基于 `knife4j-smoke-tests` 模块的自动化验证结果。✅ = smoke test 已通过；⚠️ = 依赖层面可用但无自动测试；❌ = 不兼容。
 
 ### WebMvc（Servlet）
 
@@ -48,7 +55,7 @@ Boot3 Jakarta 线继续使用 springdoc `2.8.9`；完整依赖清单见[版本�
 
 - openapi2 starter 依赖 Springfox，**不能在 Boot 3.x 上使用**。
 - openapi3（非 Jakarta）starter 依赖 `springdoc-openapi 1.8.0`，**仅适用于 Boot 2.x**。
-- openapi3 Jakarta starter 依赖 `springdoc-openapi 2.8.9`，**仅适用于 Boot 3.x**。
+- openapi3 Jakarta starter 依赖 `springdoc-openapi 2.9.1`，**仅适用于 Boot 3.x**。
 - openapi3 Boot4 starter 依赖 `springdoc-openapi 3.0.3`，**仅适用于 Boot 4.x WebMVC**。
 
 ### WebFlux
@@ -66,7 +73,7 @@ Boot3 Jakarta 线继续使用 springdoc `2.8.9`；完整依赖清单见[版本�
 | Spring Boot | springdoc | Web 栈 | 已验证 OpenAPI 输出 | 配置要求 |
 | --- | --- | --- | --- | --- |
 | Boot 2.x | `1.8.0` | WebMVC / WebFlux | 3.0.x | 保持 springdoc 1.x 输出，不支持生成 3.1 |
-| Boot 3.x | `2.8.9` | WebMVC / WebFlux | 3.1.x | 显式设置 `springdoc.api-docs.version=OPENAPI_3_1` |
+| Boot 3.4.7+ / 3.5.1+ | `2.9.1` | WebMVC / WebFlux | 3.1.x | 显式设置 `springdoc.api-docs.version=OPENAPI_3_1` |
 | Boot 4.x | `3.0.3` | WebMVC | 3.1.x | 默认和显式 `OPENAPI_3_1` 均已验证 |
 
 Boot 3 与 Boot 4 的 3.1 路径都经过真实 springdoc `/v3/api-docs`、Java smoke、React 与
