@@ -184,6 +184,7 @@ const zhCN = {
   'schema.values.enum': '可选值：',
   'schema.values.default': '默认值：',
   'schema.values.showAll': '查看全部 {{count}} 项',
+  'schema.values.collapse': '收起',
   'schema.required.yes': '是',
   'schema.required.no': '否',
   'schema.fields': '字段',

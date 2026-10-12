@@ -206,6 +206,7 @@ const enUS = {
   'schema.values.enum': 'Allowed values: ',
   'schema.values.default': 'Default: ',
   'schema.values.showAll': 'Show all {{count}} values',
+  'schema.values.collapse': 'Collapse',
   'schema.required.yes': 'Yes',
   'schema.required.no': 'No',
   'schema.fields': 'fields',

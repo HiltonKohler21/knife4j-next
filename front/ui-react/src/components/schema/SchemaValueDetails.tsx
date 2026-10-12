@@ -1,4 +1,5 @@
 import { Typography } from 'antd';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 const { Text } = Typography;
@@ -11,6 +12,7 @@ export interface SchemaValueDetailsProps {
 
 export default function SchemaValueDetails({ enum: values, default: defaultValue }: SchemaValueDetailsProps) {
   const { t } = useTranslation();
+  const [expanded, setExpanded] = useState(false);
   if ((!values || values.length === 0) && defaultValue === undefined) return null;
   const enumValues = values?.map((value) => JSON.stringify(value));
   const renderValues = (items: (string | undefined)[]) =>
@@ -29,13 +31,15 @@ export default function SchemaValueDetails({ enum: values, default: defaultValue
       {enumValues && enumValues.length > 0 && (
         <div style={style}>
           {enumValues.length > ENUM_PREVIEW_COUNT ? (
-            <details>
+            <details onToggle={(event) => setExpanded(event.currentTarget.open)}>
               <summary style={{ cursor: 'pointer' }}>
                 {t('schema.values.enum')}
-                {renderValues(enumValues.slice(0, ENUM_PREVIEW_COUNT))} …{' '}
-                <Text type="secondary">{t('schema.values.showAll', { count: enumValues.length })}</Text>
+                {renderValues(expanded ? enumValues : enumValues.slice(0, ENUM_PREVIEW_COUNT))}
+                {expanded ? ' ' : ' … '}
+                <Text type="secondary">
+                  {expanded ? t('schema.values.collapse') : t('schema.values.showAll', { count: enumValues.length })}
+                </Text>
               </summary>
-              <div>{renderValues(enumValues)}</div>
             </details>
           ) : (
             <>

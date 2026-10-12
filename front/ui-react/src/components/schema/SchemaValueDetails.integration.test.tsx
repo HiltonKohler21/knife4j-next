@@ -32,7 +32,7 @@ describe('Schema values in description cells', () => {
     },
   );
 
-  test('keeps enum and default on separate lines, with all typed choices available in expandable details', async () => {
+  test('toggles between a three-value preview and one complete list without duplicating values', async () => {
     const values = ['0', 0, false, '', null, [1, 2], { key: 'value' }];
     await act(async () => root.render(<SchemaValueDetails enum={values} default={false} />));
     const details = container.querySelector('details')!;
@@ -43,9 +43,25 @@ describe('Schema values in description cells', () => {
       '0',
       'false',
     ]);
-    expect(Array.from(details.querySelectorAll(':scope > div code'), (code) => code.textContent)).toEqual(
+    const summary = details.querySelector('summary')!;
+    await act(async () => {
+      summary.click();
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+    expect(details.open).toBe(true);
+    expect(summary.textContent).toContain('schema.values.collapse');
+    expect(summary.textContent).not.toContain('schema.values.showAll');
+    expect(Array.from(details.querySelectorAll('code'), (code) => code.textContent)).toEqual(
       values.map((value) => JSON.stringify(value)),
     );
+    await act(async () => {
+      summary.click();
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+    expect(details.open).toBe(false);
+    expect(summary.textContent).toContain('schema.values.showAll:7');
+    expect(summary.textContent).not.toContain('schema.values.collapse');
+    expect(details.querySelectorAll('code')).toHaveLength(3);
     expect(details.parentElement?.nextElementSibling?.textContent).toBe('schema.values.defaultfalse');
   });
 

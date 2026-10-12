@@ -208,6 +208,7 @@ const jaJP = {
   'schema.values.enum': '選択可能な値：',
   'schema.values.default': 'デフォルト値：',
   'schema.values.showAll': '全 {{count}} 件を表示',
+  'schema.values.collapse': '折りたたむ',
   'schema.required.yes': 'はい',
   'schema.required.no': 'いいえ',
   'schema.fields': 'フィールド',
