@@ -33,7 +33,8 @@ OpenAPI 3.0.x / 3.1.x / 3.2.x JSON，仍不接受 YAML。未知方言与自定�
 
 ## 发布前门禁
 
-在干净 checkout 的仓库根目录执行。候选提交必须已经合入 `master`：
+使用 Go 1.26+ 在干净 checkout 的仓库根目录执行（Gin 示例需要 Go 1.26，公共库仍兼容
+Go 1.22）。候选提交必须已经合入 `master`：
 
 ```bash
 git fetch origin master
@@ -51,7 +52,9 @@ git diff --check
 ```
 
 `test-knife4x-go.sh` 同时覆盖 Go 格式、`go vet`、核心测试、Gin 根路径/子路径冒烟和
-Java tag 路由隔离。再检查将进入 module 下载包的许可证与 UI 资产：
+Java tag 路由隔离。另使用 Go 1.22 执行 `./tools/test-knife4x-go.sh --module core` 验证
+公共库最低版本；脚本禁用自动工具链切换，不允许以新版 Go 代替最低版本验证。
+再检查将进入 module 下载包的许可证与 UI 资产：
 
 ```bash
 test -s knife4x/go/LICENSE

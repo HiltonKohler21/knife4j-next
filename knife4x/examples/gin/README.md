@@ -6,6 +6,9 @@
 快照，覆盖 nullable、const、tuple、GET/JSON/binary/multipart requestBody
 以及请求/响应 Schema 引用。
 
+本示例需要 Go 1.26 或更高版本。示例是独立 module，Gin 及其依赖不会进入公共库
+`knife4x/go`；公共库仍兼容 Go 1.22。
+
 在本目录运行：
 
 ```bash

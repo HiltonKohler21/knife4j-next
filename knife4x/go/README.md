@@ -120,7 +120,8 @@ log.Fatal(http.ListenAndServe(":8080", handler))
 ```
 
 完整可运行代码、根路径和子路径命令见
-[Gin example](../examples/gin/README.md)。从 `gin-swagger` 切换时请阅读
+[Gin example](../examples/gin/README.md)。该独立示例需要 Go 1.26+，公共库仍保持
+Go 1.22 基线；使用其他 Gin 版本的业务项目按自身依赖要求选择工具链。从 `gin-swagger` 切换时请阅读
 [迁移说明](MIGRATING_FROM_GIN_SWAGGER.md)。
 
 ## UI 资产
@@ -143,11 +144,19 @@ embed 配置启动，不请求 Java 的 `/knife4j/config`。
 
 ## 验证
 
-在仓库根目录运行：
+使用 Go 1.26+ 在仓库根目录验证公共库与 Gin 示例：
 
 ```bash
 ./tools/test-knife4x-go.sh
 ```
+
+使用 Go 1.22 验证公共库的最低版本兼容：
+
+```bash
+./tools/test-knife4x-go.sh --module core
+```
+
+脚本禁用自动工具链切换，确保实际验证所选 Go 版本；`--module gin` 可单独验证示例。
 
 Knife4x 与 Java `5.x` 使用独立版本和发布坐标，采用
 [Apache-2.0](LICENSE) 许可证。产品边界见 [Knife4x 总览](../README.md)。

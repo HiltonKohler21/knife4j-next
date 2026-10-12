@@ -164,6 +164,16 @@ jobs:
     needs: changes
     if: needs.changes.outputs.knife4x_go == 'true'
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - module: core
+            go-version: '1.22.x'
+          - module: all
+            go-version: '1.26.x'
+    env:
+      GOTOOLCHAIN: local
     defaults:
       run:
         working-directory: .
@@ -174,7 +184,8 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
-          go-version-file: knife4x/go/go.mod
+          go-version: ${{ matrix.go-version }}
+          check-latest: true
           cache: false
 
       - name: Set up Node.js
@@ -188,9 +199,10 @@ jobs:
           bun-version-file: .bun-version
 
       - name: Test Knife4x Go
-        run: ./tools/test-knife4x-go.sh
+        run: ./tools/test-knife4x-go.sh --module "${{ matrix.module }}"
 
       - name: Verify Knife4x Go UI assets
+        if: matrix.module == 'all'
         run: ./tools/sync-knife4x-ui.sh --check
 
   vue3-test:
