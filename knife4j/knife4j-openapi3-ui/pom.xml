@@ -84,7 +84,7 @@
                     </execution>
                 </executions>
             </plugin>
-            <!-- Step 1: vite build with outDir pointing to Maven target -->
+            <!-- Step 1: compile workspace dependencies before Vite consumes lib output. -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
@@ -102,7 +102,42 @@
                                 <argument>install</argument>
                                 <argument>--frozen-lockfile</argument>
                             </arguments>
-                            <!-- workspace root: core + ui-react share front/bun.lock -->
+                            <!-- workspace root: all OAS3 packages share front/bun.lock -->
+                            <workingDirectory>${knife4j-front.dir}</workingDirectory>
+                        </configuration>
+                    </execution>
+                    <!-- install/prepare is insufficient in an already-installed workspace. -->
+                    <execution>
+                        <id>core-build</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>bun</executable>
+                            <arguments>
+                                <argument>run</argument>
+                                <argument>--filter</argument>
+                                <argument>knife4j-core</argument>
+                                <argument>build</argument>
+                            </arguments>
+                            <workingDirectory>${knife4j-front.dir}</workingDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>schema-build</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>bun</executable>
+                            <arguments>
+                                <argument>run</argument>
+                                <argument>--filter</argument>
+                                <argument>knife4j-schema-engine</argument>
+                                <argument>build</argument>
+                            </arguments>
                             <workingDirectory>${knife4j-front.dir}</workingDirectory>
                         </configuration>
                     </execution>

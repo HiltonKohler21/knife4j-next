@@ -30,6 +30,7 @@
 
 - 改前端源码时用对应脚本，不要用单独 `tsc` / `vite build` 冒充全量。
 - Java 改动的 PR / issue 应能指向 smoke 证据：本地 `test-java.sh` 尾部 `Smoke-tests evidence OK`，或 CI 的 smoke summary。
+- Java 标准脚本包含 OAS3 UI 冷/热工作区回归：真实 Maven package 的 WebJar 文件与字节必须等于显式 core/schema + Vite 构建，残留旧 `lib` 不得改变打包结果；core/schema 编译失败须在 Vite 前终止。
 - Java CI 的兼容报告只把真实 API / 实现差异作为审查信号，不因差异本身失败；基线、工具、发布模块或已登记配置/公开入口契约异常仍是硬失败。单模块分析忽略缺失外部类，不能替代消费方测试。
 - 有意增删 Spring Boot 配置 key 时，构建后运行 `./tools/verify-java-compatibility-contracts.py --update-config`，人工核对 `tools/java-compatibility-contracts.tsv` 后再执行标准 Java 验证；不得为过门禁直接重生成并跳过语义审查。
 - 增删 smoke 模块时同步更新 `tools/test-java.sh` 的 `SMOKE_MODULES` 与 `.github/workflows/build.yml` 中的 summary 列表（若仓库已抽出 `tools/smoke-modules.txt` 则只改该文件）。
