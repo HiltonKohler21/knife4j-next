@@ -24,6 +24,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,21 +34,11 @@ public class OpenApi2UiResourceSmokeTest {
 
     private static final Pattern ASSET_REFERENCE = Pattern.compile("(?:href|src)=[\"']?([^\"'\\s>]+)[\"']?");
 
-    /**
-     * Vite inlines {@code import.meta.env.VITE_RELEASE_APP_TYPE} at build time. Depending on minifier passes this
-     * may appear as {@code const id="Knife4jSpringUi"} or (when folded) {@code switch("Knife4jSpringUi")}. Either
-     * ties the webjar to {@code build:Knife4jSpringUi} (Springfox), not {@code SpringDocOpenApi}.
-     */
-    private static final Pattern VITE_RELEASE_KNIFE4J_SPRING_UI =
-            Pattern.compile(
-                    "onMounted\\(\\(\\)=>\\{(?:const\\s+\\w+=\"Knife4jSpringUi\"|switch\\(\"Knife4jSpringUi\"\\))");
-
     @Test
     public void shouldPackageDocHtmlAndReferencedAssets() throws IOException {
         String docHtml = readResource("META-INF/resources/doc.html");
 
         assertReferencedWebjarAssets(docHtml);
-        assertPackagedJsUsesKnife4jSpringUiReleaseType(docHtml);
         assertResource("META-INF/resources/knife4j-next-mark.svg");
         assertResource("META-INF/resources/webjars/oauth/oauth2.html");
     }
@@ -75,28 +68,29 @@ public class OpenApi2UiResourceSmokeTest {
         Assert.assertTrue("doc.html should reference packaged JS assets", jsAssets > 0);
     }
 
-    private void assertPackagedJsUsesKnife4jSpringUiReleaseType(String docHtml) throws IOException {
-        Matcher matcher = ASSET_REFERENCE.matcher(docHtml);
-        boolean found = false;
-        while (matcher.find()) {
-            String asset = matcher.group(1);
-            if (asset.startsWith("./")) {
-                asset = asset.substring(2);
-            }
-            if (!asset.startsWith("webjars/js/") || !asset.endsWith(".js")) {
-                continue;
-            }
-            String path = "META-INF/resources/" + asset;
-            String js = readResource(path);
-            if (VITE_RELEASE_KNIFE4J_SPRING_UI.matcher(js).find()) {
-                found = true;
-                break;
+    @Test
+    public void shouldStartPackagedUiInSpringfoxDesktopMode() throws Exception {
+        URL doc = Thread.currentThread().getContextClassLoader().getResource("META-INF/resources/doc.html");
+        Assert.assertNotNull("Missing packaged doc.html", doc);
+        Assert.assertEquals("Surefire must execute the packaged classes directory", "file", doc.getProtocol());
+        Path resources = Path.of(doc.toURI()).getParent();
+        Path moduleDir = Path.of(System.getProperty("basedir")).toAbsolutePath();
+        Path script = moduleDir.resolve("../../front/vue3/scripts/check-webjar-smoke.mjs").normalize();
+        Path log = moduleDir.resolve("target/vue3-webjar-behavior.log");
+        Process process = new ProcessBuilder("node", "--experimental-vm-modules", script.toString(), resources.toString())
+                .redirectErrorStream(true)
+                .redirectOutput(log.toFile())
+                .start();
+        try {
+            boolean completed = process.waitFor(60, TimeUnit.SECONDS);
+            Assert.assertTrue("Packaged Vue3 behavior smoke timed out; see " + log, completed);
+            Assert.assertEquals(Files.readString(log), 0, process.exitValue());
+        } finally {
+            if (process.isAlive()) {
+                process.destroyForcibly();
+                process.waitFor(5, TimeUnit.SECONDS);
             }
         }
-        Assert.assertTrue(
-                "Packaged JS should inline VITE_RELEASE_APP_TYPE=Knife4jSpringUi (openapi2 / Springfox). "
-                        + "If this fails, knife4j-openapi2-ui may be building with the wrong vite script.",
-                found);
     }
 
     private String readResource(String path) throws IOException {

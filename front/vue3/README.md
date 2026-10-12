@@ -12,6 +12,12 @@ OAS2 兼容维护 UI（Vue 3 + Vite）。本目录产物被 `knife4j/knife4j-ope
 `bun.lock`）。Maven 构建也通过 bun 调用 vite，参见
 `knife4j/knife4j-openapi2-ui/pom.xml` 中的 `exec-maven-plugin` 执行块。
 
+## 浏览器与工具链基线
+
+Vite 8.3.4 使用 Rolldown/Oxc 构建。JS 与 CSS 显式固定为 Chrome/Edge 111、Firefox 114、
+Safari 16.4 及以上；这是本次经维护者批准提高的 OAS2 Vue3 最低版本，不改变 React UI 的浏览器要求。
+Node 使用仓库 `.nvmrc` 的 22 系列（Vite 至少要求 22.12，仓库其他工具要求见 `.agent/RUNBOOK.md`）。
+
 ## 本地开发
 
 ```bash
@@ -27,7 +33,7 @@ bun run build
 ```
 
 构建产物默认写入 `dist/`。在 Maven 流水线里，`knife4j-openapi2-ui` 模块会通过 `--outDir` 把产物重定向到
-`knife4j/knife4j-openapi2-ui/target/front/vue3-dist`，再由 `maven-resources-plugin` 拷贝到
+`knife4j/knife4j-openapi2-ui/target/knife4j-vue3-dist`，再由 `maven-resources-plugin` 拷贝到
 `META-INF/resources/`（`doc.html`、`webjars/`、`img/icons/`）。
 
 ## 与 Java 模块的集成
@@ -50,6 +56,10 @@ bun run build
 
 该脚本会进入 `front/vue3/`，执行 `bun install --frozen-lockfile` 与 `bun run build:Knife4jSpringUi`，
 并检查 `dist/doc.html`、`dist/webjars/`、`dist/webjars/oauth/oauth2.html` 是否生成。
+随后通过 Node VM ES modules 与 jsdom 执行实际构建 JS，在根目录和 `/demo/` 子路径下验证
+Springfox 分组/Swagger2 请求、desktop gateway header 与文档初始化；夹具符合 Swagger 2.0。
+Java smoke 对 `target/classes/META-INF/resources` 使用同一行为脚本，继续检查 doc.html 引用的资源完整性。
+该测试不依赖压缩后的变量名或 switch 格式；隔离 DOM 不代替真实浏览器布局和最低版本验收。
 
 修改 Java 模块或本目录产物集成逻辑后，还需运行：
 
