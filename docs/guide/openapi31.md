@@ -7,7 +7,7 @@ description: Knife4j Next 对 OpenAPI 3.1.x 的支持矩阵、JSON Schema 2020-1
 
 [English contract](./openapi31-en) · [下载最小 JSON](/examples/openapi-3.1-minimal.json) · [下载最小 YAML](/examples/openapi-3.1-minimal.yaml)
 
-本文描述 Java `5.7.7` 的 OpenAPI 3.1 契约，具体能力与版本归属见
+本文描述 Java `5.7.8` 的 OpenAPI 3.1 契约，具体能力与版本归属见
 [发布说明](../release-notes/)和 [版本参考](../reference/version-ref)。Knife4x Go 使用独立版本，
 请查阅 [Go 发布说明](../knife4x/)。本文不改变任何 starter 或默认配置。
 
@@ -15,7 +15,7 @@ description: Knife4j Next 对 OpenAPI 3.1.x 的支持矩阵、JSON Schema 2020-1
 
 OpenAPI 的功能集由 `major.minor` 定义。`3.1.x` 因此使用同一套 **OpenAPI 3.1 feature set**，不按 patch 版本拆分能力，
 离线导出也复用统一版本判断，不维护私有 patch 白名单。已有 OpenAPI 3.0.x 路径继续保留。
-OpenAPI 3.2.x 消费契约见 [OpenAPI 3.2 支持矩阵](./openapi32)；已发布的 `5.7.7` / Knife4x `v0.8.6` 在本页交付 3.1 范围，3.2 走独立路径。
+OpenAPI 3.2.x 消费契约见 [OpenAPI 3.2 支持矩阵](./openapi32)；已发布的 `5.7.8` / Knife4x `v0.8.7` 在本页交付 3.1 范围，3.2 走独立路径。
 
 | 文档版本 | UI | 状态 | 说明 |
 | --- | --- | --- | --- |
@@ -24,12 +24,12 @@ OpenAPI 3.2.x 消费契约见 [OpenAPI 3.2 支持矩阵](./openapi32)；已发�
 | OpenAPI 3.1.x | React | 支持 | 使用同一 feature set，并遵守下列产品边界 |
 | OpenAPI 3.2.x | React | 已发布支持 | 不猜测或降级成 3.1 处理；能力与限制见 [OpenAPI 3.2 支持矩阵](./openapi32) |
 
-::: info 待发布源码升级
-当前源码的 Boot3 Jakarta WebMVC、WebFlux 与独立聚合使用 springdoc `2.9.1`，Swagger Jakarta
+::: info 5.7.8 支持下限
+`5.7.8` 的 Boot3 Jakarta WebMVC、WebFlux 与独立聚合使用 springdoc `2.9.1`，Swagger Jakarta
 `annotations` / `models` / `core` 统一为 `2.2.55`。JDK 下限仍为 17；Boot 3.4 线下限为
 `3.4.7`，Boot 3.5 线下限为 `3.5.1`（共同需要 Framework `6.2.8`）。Boot `3.5.0` 不满足此下限。
-这是待发布源码的要求；下方 `5.7.7` 及更早版本的历史依赖与兼容记录保持原样。
-详见[版本对照](../reference/version-ref#待发布源码依赖更新)。
+这是 `5.7.8` 的要求；`5.7.7` 及更早版本的历史依赖与兼容记录保持原样。
+详见[版本对照](../reference/version-ref#5-7-8-依赖更新)。
 :::
 
 ### springdoc 生成矩阵
@@ -37,8 +37,8 @@ OpenAPI 3.2.x 消费契约见 [OpenAPI 3.2 支持矩阵](./openapi32)；已发�
 | Spring Boot | starter / springdoc | 生成结果 | 已验证路径 | 证据 |
 | --- | --- | --- | --- | --- |
 | Boot 2.x | openapi3 非 Jakarta / springdoc `1.8.0` | OpenAPI 3.0.x | 保持既有兼容基线 | [#737](https://github.com/songxychn/knife4j-next/pull/737) |
-| Boot 3.x WebMVC | openapi3 Jakarta / springdoc `2.8.9` | 显式开启 OpenAPI 3.1 | 真实 `/v3/api-docs` → Java smoke → React / SchemaEngine | [#737](https://github.com/songxychn/knife4j-next/pull/737) |
-| Boot 3.x WebFlux | webflux Jakarta / springdoc `2.8.9` | 显式开启 OpenAPI 3.1 | 真实 `/v3/api-docs` → Java smoke → React / SchemaEngine | [#737](https://github.com/songxychn/knife4j-next/pull/737) |
+| Boot 3.x WebMVC | openapi3 Jakarta / springdoc `2.9.1` | 显式开启 OpenAPI 3.1 | 真实 `/v3/api-docs` → Java smoke → React / SchemaEngine | [#872](https://github.com/songxychn/knife4j-next/pull/872) |
+| Boot 3.x WebFlux | webflux Jakarta / springdoc `2.9.1` | 显式开启 OpenAPI 3.1 | 真实 `/v3/api-docs` → Java smoke → React / SchemaEngine | [#872](https://github.com/songxychn/knife4j-next/pull/872) |
 | Boot 4.x WebMVC | Boot4 starter / springdoc `3.0.3` | 默认或显式 OpenAPI 3.1 | 两种配置都经过端到端验证 | [#737](https://github.com/songxychn/knife4j-next/pull/737) |
 
 Boot 3 项目显式生成 OAS 3.1 文档：

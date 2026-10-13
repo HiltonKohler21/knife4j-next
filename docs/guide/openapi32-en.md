@@ -9,7 +9,7 @@ lang: en-US
 [中文契约](./openapi32) · [Download minimal JSON](/examples/openapi-3.2-minimal.json) · [Download minimal YAML](/examples/openapi-3.2-minimal.yaml)
 
 ::: info Published
-Java `5.7.7` and Knife4x Go `v0.8.6` consume valid OpenAPI 3.2.x documents as described here. This is not a promise that springdoc generates 3.2; current production dependencies still emit 3.0.x / 3.1.x.
+Java `5.7.8` and Knife4x Go `v0.8.7` consume valid OpenAPI 3.2.x documents as described here. This is not a promise that springdoc generates 3.2; current production dependencies still emit 3.0.x / 3.1.x.
 :::
 
 Published OpenAPI 3.0.x / 3.1.x contracts are unchanged; see [OpenAPI 3.1 Support and Migration](./openapi31-en). The Vue 3 UI remains OAS2-only. This page does not change starter defaults and does not upgrade springdoc or Java production dependencies.
@@ -21,27 +21,27 @@ OpenAPI defines its feature set at the `major.minor` level. `3.2.x` shares one *
 | Document version | UI | Status | Contract |
 | --- | --- | --- | --- |
 | Swagger / OpenAPI 2.0 | Vue 3 | Maintenance | No OAS 3 expansion |
-| OpenAPI 3.0.x | React | Published | Java `5.7.7` / Go `v0.8.6` |
-| OpenAPI 3.1.x | React | Published | Java `5.7.7` / Go `v0.8.6` |
+| OpenAPI 3.0.x | React | Published | Java `5.7.8` / Go `v0.8.7` |
+| OpenAPI 3.1.x | React | Published | Java `5.7.8` / Go `v0.8.7` |
 | OpenAPI 3.2.x | React | **Published** | Full consumption of valid 3.2 documents; never treated as 3.1 |
 
 ## Specification fixtures versus generator output
 
-Unreleased source uses Boot3 springdoc `2.9.1` with Swagger Jakarta `2.2.55`; its generated output remains OAS 3.1, with [updated Boot minimums](../reference/version-ref#待发布源码依赖更新).
+Java `5.7.8` uses Boot3 springdoc `2.9.1` with Swagger Jakarta `2.2.55`; its generated output remains OAS 3.1, with [updated Boot minimums](../reference/version-ref#5-7-8-依赖更新).
 
-Java `5.7.7` dependencies remain springdoc `1.8.0` / `2.8.9` / Boot4 `3.0.3`. They currently emit OpenAPI 3.0.x or 3.1.x. Changing the `openapi` string in `/v3/api-docs` to `3.2.0` is **not** real 3.2 generation evidence.
+Java `5.7.8` dependencies remain springdoc `1.8.0` / `2.9.1` / Boot4 `3.0.3`. They currently emit OpenAPI 3.0.x or 3.1.x. Changing the `openapi` string in `/v3/api-docs` to `3.2.0` is **not** real 3.2 generation evidence.
 
 | Source | Actual output | Use in this roadmap |
 | --- | --- | --- |
 | Boot 2.x + springdoc `1.8.0` | OpenAPI 3.0.x | 3.0 regression |
-| Boot 3.x / 4.x + springdoc `2.8.9` / `3.0.3` | OpenAPI 3.1.x | 3.1 regression |
+| Boot 3.x / 4.x + springdoc `2.9.1` / `3.0.3` | OpenAPI 3.1.x | 3.1 regression |
 | Handwritten specification fixtures | OpenAPI 3.2.0 | 3.2 display, debug, export, change tracking, and host loading |
 
 3.2 fixtures are labeled as specification documents. Real Java 3.2 generation would require a separate maintainer decision to upgrade production dependencies.
 
 ## Product capability matrix
 
-Unless a row says otherwise, “supported” means the complete OpenAPI 3.2.x feature set in published Java `5.7.7` / Go `v0.8.6`.
+Unless a row says otherwise, “supported” means the complete OpenAPI 3.2.x feature set in published Java `5.7.8` / Go `v0.8.7`.
 
 | Capability | OAS 3.2 behavior | Boundary | Merged evidence |
 | --- | --- | --- | --- |
@@ -83,7 +83,7 @@ An explicit official 3.2 dialect URI is executed as written. When root-level `js
 | Examples | `value` / `externalValue` | Same, plus JSON Schema `examples` | Adds `dataValue` / `serializedValue` |
 | Change tracking | `oas3.0-v1` | `oas3.1-v1` | `oas3.2-v1` |
 | Offline export | 3.0 snapshot | 3.1 snapshot rejects 3.2 | 3.2 snapshot rejects 3.1 |
-| Generators | springdoc 1.8.0 → 3.0 | springdoc 2.8.9 / 3.0.3 → 3.1 | No current production generator; specification fixtures only |
+| Generators | springdoc 1.8.0 → 3.0 | springdoc 2.9.1 / 3.0.3 → 3.1 | No current production generator; specification fixtures only |
 | Failure paths | OAS2 stays on Vue 3 | Unknown dialect / resource failures stay unavailable | Structural errors such as mixing querystring with query are diagnosed |
 
 The executable matrix is `front/ui-react/src/schema/oas32HostAcceptanceMatrix.test.ts`, in addition to the existing 3.0/3.1 tests.

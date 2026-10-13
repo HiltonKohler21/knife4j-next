@@ -8,7 +8,7 @@ title: 路线图
 
 ---
 
-## 当前阶段：5.7.7 与 OpenAPI 3.2
+## 当前阶段：5.7.8 与 OpenAPI 3.2
 
 ### 已完成 ✅
 
@@ -17,7 +17,7 @@ title: 路线图
 | 基础设施 | Maven `groupId` 迁移至 `com.baizhukui` | ✅ |
 | 基础设施 | GitHub Actions CI/CD 流程补齐 | ✅ |
 | 安全 | 修复 `/v2/api-docs` 分号绕过 Basic 认证（#886） | ✅ |
-| 兼容性 | Spring Boot 3.4.x / 3.5.x 兼容（springdoc 2.8.9） | ✅ |
+| 兼容性 | Spring Boot 3.4.7+ / 3.5.1+ 生成器兼容（springdoc 2.9.1） | ✅ |
 | 兼容性 | Spring Boot 4.x WebMVC 专用 starter（`knife4j-openapi3-boot4-spring-boot-starter`，springdoc-openapi 3.0.3） | ✅ |
 | Bug 修复 | Gateway `context-path` 导致聚合 host 少斜杠（#954） | ✅ |
 | Bug 修复 | Gateway 聚合刷新非默认文档分组深链时恢复正确 group | ✅ |
