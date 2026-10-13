@@ -8,7 +8,7 @@ lang: en-US
 
 [中文契约](./openapi31) · [Download minimal JSON](/examples/openapi-3.1-minimal.json) · [Download minimal YAML](/examples/openapi-3.1-minimal.yaml)
 
-This page describes the OpenAPI 3.1 contract of Java `5.7.7`. See the
+This page describes the OpenAPI 3.1 contract of Java `5.7.8`. See the
 [release notes](../release-notes/) and [version reference](../reference/version-ref) for version-specific capabilities.
 Knife4x Go is versioned independently; see the [Go release notes](../knife4x/).
 This document does not change any starter or default setting.
@@ -19,7 +19,7 @@ OpenAPI defines its feature set at the `major.minor` level. `3.1.x` therefore sh
 patch-specific capability forks, and offline export reuses the shared version predicate instead of a private patch allowlist.
 Existing OpenAPI 3.0.x behavior remains available. OpenAPI 3.2.x consumption is documented in the
 [OpenAPI 3.2 support matrix](./openapi32-en); published
-`5.7.7` / Knife4x `v0.8.6` still ship the 3.1 contract on this page and keep 3.2 on a separate path.
+`5.7.8` / Knife4x `v0.8.7` still ship the 3.1 contract on this page and keep 3.2 on a separate path.
 
 | Document version | UI | Status | Contract |
 | --- | --- | --- | --- |
@@ -28,12 +28,12 @@ Existing OpenAPI 3.0.x behavior remains available. OpenAPI 3.2.x consumption is 
 | OpenAPI 3.1.x | React | Supported | Shares one feature set, subject to the boundaries below |
 | OpenAPI 3.2.x | React | Published | Never guessed or treated as 3.1; see the [OpenAPI 3.2 matrix](./openapi32-en) |
 
-::: info Unreleased source upgrade
-The source branch uses springdoc `2.9.1` with Swagger Jakarta annotations/models/core `2.2.55`.
+::: info 5.7.8 support minimums
+Java `5.7.8` uses springdoc `2.9.1` with Swagger Jakarta annotations/models/core `2.2.55`.
 Boot3 MVC, WebFlux and standalone aggregation require Boot `3.4.7+` on the 3.4 line or `3.5.1+`
 on the 3.5 line (Framework `6.2.8`). Raw Java Object properties and `List<Object>` items allow any
-JSON value in OAS 3.1. The table below records the published `5.7.7` matrix; see the
-[source dependency changes](../reference/version-ref#待发布源码依赖更新) and
+JSON value in OAS 3.1. The table below records the `5.7.8` matrix; see the
+[5.7.8 dependency changes](../reference/version-ref#5-7-8-依赖更新) and
 [migration configuration](../reference/configuration#生成-openapi-3-1-文档).
 :::
 
@@ -42,8 +42,8 @@ JSON value in OAS 3.1. The table below records the published `5.7.7` matrix; see
 | Spring Boot | starter / springdoc | Generated document | Verified path | Evidence |
 | --- | --- | --- | --- | --- |
 | Boot 2.x | non-Jakarta openapi3 / springdoc `1.8.0` | OpenAPI 3.0.x | Existing compatibility baseline | [#737](https://github.com/songxychn/knife4j-next/pull/737) |
-| Boot 3.x WebMVC | Jakarta openapi3 / springdoc `2.8.9` | OpenAPI 3.1 when explicitly enabled | Real `/v3/api-docs` → Java smoke → React / SchemaEngine | [#737](https://github.com/songxychn/knife4j-next/pull/737) |
-| Boot 3.x WebFlux | Jakarta webflux / springdoc `2.8.9` | OpenAPI 3.1 when explicitly enabled | Real `/v3/api-docs` → Java smoke → React / SchemaEngine | [#737](https://github.com/songxychn/knife4j-next/pull/737) |
+| Boot 3.x WebMVC | Jakarta openapi3 / springdoc `2.9.1` | OpenAPI 3.1 when explicitly enabled | Real `/v3/api-docs` → Java smoke → React / SchemaEngine | [#872](https://github.com/songxychn/knife4j-next/pull/872) |
+| Boot 3.x WebFlux | Jakarta webflux / springdoc `2.9.1` | OpenAPI 3.1 when explicitly enabled | Real `/v3/api-docs` → Java smoke → React / SchemaEngine | [#872](https://github.com/songxychn/knife4j-next/pull/872) |
 | Boot 4.x WebMVC | Boot4 starter / springdoc `3.0.3` | OpenAPI 3.1 by default or explicitly | Both configurations passed the end-to-end matrix | [#737](https://github.com/songxychn/knife4j-next/pull/737) |
 
 Enable OAS 3.1 generation explicitly on Boot 3:

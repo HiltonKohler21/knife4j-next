@@ -4,12 +4,12 @@ title: 模块说明
 
 # 模块说明
 
-::: info 待发布源码升级
-当前源码的 Boot3 Jakarta WebMVC、WebFlux 与独立聚合使用 springdoc `2.9.1`，Swagger Jakarta
+::: info 5.7.8 支持下限
+`5.7.8` 的 Boot3 Jakarta WebMVC、WebFlux 与独立聚合使用 springdoc `2.9.1`，Swagger Jakarta
 `annotations` / `models` / `core` 统一为 `2.2.55`。JDK 下限仍为 17；Boot 3.4 线下限为
 `3.4.7`，Boot 3.5 线下限为 `3.5.1`（共同需要 Framework `6.2.8`）。Boot `3.5.0` 不满足此下限。
-这是待发布源码的要求；本页 `5.7.7` 及更早版本的历史依赖与兼容记录保持原样。
-详见[版本对照](./version-ref#待发布源码依赖更新)。
+这是 `5.7.8` 的要求；`5.7.7` 及更早版本的历史依赖与兼容记录保持原样。
+详见[版本对照](./version-ref#5-7-8-依赖更新)。
 :::
 
 ## 仓库顶层目录
@@ -18,7 +18,7 @@ title: 模块说明
 | --- | --- |
 | `knife4j/` | Java 主工程——用户实际引入的 starter 和 webjar 都在这里构建 |
 | `front/` | 活跃前端：`core` + `ui-react`（OAS3）、`vue3`（OAS2 兼容） |
-| `knife4x/` | 嵌入式控制台：Go `v0.8.6` 已发布，Rust 后置；UI 共用 `front/ui-react` |
+| `knife4x/` | 嵌入式控制台：Go `v0.8.7` 已发布，Rust 后置；UI 共用 `front/ui-react` |
 | `docs/` | 当前 VitePress 文档站 |
 | `tools/` | 验证、发布与任务看板脚本 |
 | `legacy/` | 冻结参考（`vue2`、`insight`、`sandbox`），不参与主线构建 |
@@ -47,7 +47,7 @@ Go 服务不使用 Maven starter，请直接查看 [Knife4x Go 接入](/knife4x/
 | --- | --- | --- | --- | --- |
 | `knife4j-openapi2-spring-boot-starter` | 2.x | —（用 Springfox） | 2.0 | `knife4j-openapi2-ui`（Vue 3） |
 | `knife4j-openapi3-spring-boot-starter` | 2.x | `springdoc-openapi-ui 1.8.0` | 3.0.x | `knife4j-openapi3-ui`（React） |
-| `knife4j-openapi3-jakarta-spring-boot-starter` | 3.x | `springdoc-openapi-starter-webmvc-ui 2.8.9` | 显式开启 3.1.x | `knife4j-openapi3-ui`（React） |
+| `knife4j-openapi3-jakarta-spring-boot-starter` | 3.x | `springdoc-openapi-starter-webmvc-ui 2.9.1` | 显式开启 3.1.x | `knife4j-openapi3-ui`（React） |
 | `knife4j-openapi3-boot4-spring-boot-starter` | 4.x | `springdoc-openapi-starter-webmvc-ui 3.0.3` | 默认或显式 3.1.x | `knife4j-openapi3-ui`（React） |
 
 ### Starter（WebFlux）

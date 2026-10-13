@@ -19,12 +19,12 @@ title: 快速开始
 
 ### 环境要求
 
-::: info 待发布源码升级
-当前源码的 Boot3 Jakarta WebMVC、WebFlux 与独立聚合使用 springdoc `2.9.1`，Swagger Jakarta
+::: info 5.7.8 支持下限
+`5.7.8` 的 Boot3 Jakarta WebMVC、WebFlux 与独立聚合使用 springdoc `2.9.1`，Swagger Jakarta
 `annotations` / `models` / `core` 统一为 `2.2.55`。JDK 下限仍为 17；Boot 3.4 线下限为
 `3.4.7`，Boot 3.5 线下限为 `3.5.1`（共同需要 Framework `6.2.8`）。Boot `3.5.0` 不满足此下限。
-这是待发布源码的要求；下方 `5.7.7` 及更早版本的历史依赖与兼容记录保持原样。
-详见[版本对照](../reference/version-ref#待发布源码依赖更新)。
+这是 `5.7.8` 的要求；`5.7.7` 及更早版本的历史依赖与兼容记录保持原样。
+详见[版本对照](../reference/version-ref#5-7-8-依赖更新)。
 :::
 
 - JDK 17+
@@ -37,7 +37,7 @@ title: 快速开始
 <dependency>
     <groupId>com.baizhukui</groupId>
     <artifactId>knife4j-openapi3-boot4-spring-boot-starter</artifactId>
-    <version>5.7.7</version>
+    <version>5.7.8</version>
 </dependency>
 ```
 
@@ -78,8 +78,8 @@ Controller 写法与 Boot 3.x Jakarta 版一致，annotation 使用 `io.swagger.
 ### 环境要求
 
 - JDK 17+
-- Spring Boot `3.4.0` ~ `3.5.x`（smoke-tests 覆盖 `3.4.5`、`3.5.0`，以及 Gateway Server Web MVC 的 `3.5.16`）
-- springdoc-openapi-jakarta `2.8.9`（starter 已管理，无需显式声明）
+- Spring Boot 3.4 线 `3.4.7+` 或 3.5 线 `3.5.1+`（Jakarta MVC/WebFlux/独立聚合 smoke 使用真实 Boot `3.4.7` / `3.5.1` BOM，Framework `6.2.8`；Gateway 使用各自既有组合）
+- springdoc-openapi-jakarta `2.9.1`（starter 已管理，无需显式声明）
 
 ### 依赖
 
@@ -87,7 +87,7 @@ Controller 写法与 Boot 3.x Jakarta 版一致，annotation 使用 `io.swagger.
 <dependency>
     <groupId>com.baizhukui</groupId>
     <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
-    <version>5.7.7</version>
+    <version>5.7.8</version>
 </dependency>
 ```
 
@@ -162,7 +162,7 @@ React 新前端会读取部分 `knife4j.setting.*` UI 默认值，例如 `langua
 <dependency>
     <groupId>com.baizhukui</groupId>
     <artifactId>knife4j-openapi3-spring-boot-starter</artifactId>
-    <version>5.7.7</version>
+    <version>5.7.8</version>
 </dependency>
 ```
 
@@ -196,7 +196,7 @@ UI 同样是新 React 版本，注意覆盖范围提示。
 <dependency>
     <groupId>com.baizhukui</groupId>
     <artifactId>knife4j-openapi2-spring-boot-starter</artifactId>
-    <version>5.7.7</version>
+    <version>5.7.8</version>
 </dependency>
 ```
 

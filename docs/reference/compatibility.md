@@ -13,14 +13,14 @@ title: 兼容矩阵
 
 | 维度 | 版本 |
 | --- | --- |
-| knife4j-next | `5.7.7` |
+| knife4j-next | `5.7.8` |
 | Java 最低版本 | `1.8`（openapi2 / openapi3 非 Jakarta）；`17`（Jakarta / Boot4） |
 | Springfox | `2.10.5`（openapi2 starter） |
-| springdoc-openapi | `1.8.0`（Boot 2.x）；`2.8.9`（Boot 3.x Jakarta）；`3.0.3`（Boot 4.x） |
+| springdoc-openapi | `1.8.0`（Boot 2.x）；`2.9.1`（Boot 3.x Jakarta）；`3.0.3`（Boot 4.x） |
 | 前端 UI | React（openapi3 starter，打包 `front/ui-react`）；Vue 3（openapi2 starter，打包本仓库 `front/vue3`） |
 
 ::: info 发布版本与源码能力
-上表为 `5.7.7` 的依赖基线；本轮 OpenAPI 3.1 能力从 Java `5.5.0` 起提供，
+上表为 `5.7.8` 的依赖基线；本轮 OpenAPI 3.1 能力从 Java `5.5.0` 起提供，
 OpenAPI 3.2 消费从 Java `5.7.0` 起提供，
 不应反向视为 `5.4.0` 等历史版本的能力。支持范围见 [OpenAPI 3.1 支持与迁移](../guide/openapi31)
 和 [OpenAPI 3.2 支持与迁移](../guide/openapi32)。
@@ -28,21 +28,23 @@ OpenAPI 3.2 消费从 Java `5.7.0` 起提供，
 各版本变更以[发布说明](../release-notes/)为准。
 :::
 
-::: info 5.7.7 依赖基线
-`5.7.7` 将 Boot4 依赖更新为 Boot `4.0.8` / Cloud `2025.1.3`。
-Boot3 Jakarta 线继续使用 springdoc `2.8.9`；完整依赖清单见[版本对照](./version-ref#5-7-7-依赖更新)。
+::: info 5.7.8 支持下限
+Boot3 Jakarta MVC、WebFlux、独立聚合使用 springdoc `2.9.1` / Swagger Jakarta `2.2.55`。
+Boot 3.4 线要求 `3.4.7+`，Boot 3.5 线要求 `3.5.1+`，对应 Framework `6.2.8`；
+Boot `3.5.0` 不满足下限。Gateway 保持各自既有 Cloud/Boot 组合。Boot4 springdoc 保持 `3.0.3`，
+Boot4 依赖仍为 Boot `4.0.8` / Cloud `2025.1.3`。
+`5.7.7` 及更早版本历史记录不变，完整差异见[5.7.8 依赖更新](./version-ref#5-7-8-依赖更新)。
 :::
 
-::: info 待发布源码支持下限
-当前源码的 Boot3 Jakarta MVC、WebFlux、独立聚合已升级至 springdoc `2.9.1`，Swagger Jakarta
-三件套统一为 `2.2.55`。Boot 3.4 线要求 `3.4.7+`，Boot 3.5 线要求 `3.5.1+`，
-对应 Framework `6.2.8`；Boot `3.5.0` 仍会触发路径模式组合错误。Boot4 springdoc 保持 `3.0.3`。
-上表及 `5.7.7` 历史记录保持原样；完整源码差异见[待发布源码依赖更新](./version-ref#待发布源码依赖更新)。
-:::
+## 浏览器基线
+
+`5.7.8` 的 OAS2 Vue3 WebJar 采用 Vite `8.3.4`，JS/CSS 最低浏览器为 Chrome/Edge `111`、
+Firefox `114`、Safari `16.4`。这是相对旧版提高的 OAS2 下限，旧浏览器用户升级前须确认环境。
+该调整仅适用于 OAS2 Vue3，React UI 的浏览器要求保持不变（PR #881）。
 
 ## Starter 兼容矩阵
 
-以下 starter 矩阵描述当前源码，Boot3 生成器线按上述下限接入；历史发布版本见[版本对照](./version-ref)。矩阵基于 `knife4j-smoke-tests` 模块的自动化验证结果。✅ = smoke test 已通过；⚠️ = 依赖层面可用但无自动测试；❌ = 不兼容。
+以下 starter 矩阵描述 `5.7.8`，Boot3 生成器线按上述下限接入；历史发布版本见[版本对照](./version-ref)。矩阵基于 `knife4j-smoke-tests` 模块的自动化验证结果。✅ = smoke test 已通过；⚠️ = 依赖层面可用但无自动测试；❌ = 不兼容。
 
 ### WebMvc（Servlet）
 

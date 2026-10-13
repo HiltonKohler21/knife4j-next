@@ -12,7 +12,27 @@ title: 发布说明
 
 ## knife4j-next 版本
 
-### 5.7.7 <Badge type="tip" text="最新" />
+### 5.7.8 <Badge type="tip" text="最新" />
+
+`5.7.8` 纳入已合并的 springdoc / Boot BOM 兼容修复、Schema 字段展示与 WebJar 构建修复。同步发布 Knife4x Go `v0.8.7`。**Boot3 Jakarta 生成器支持下限调整，升级前须检查 Boot / Framework 组合。**
+
+**Java 兼容与发布产物**
+
+- Boot3 Jakarta MVC、WebFlux、独立聚合升级至 springdoc `2.9.1`；Swagger Jakarta annotations / models / core 统一为 `2.2.55`，使用真实 Boot BOM 编译和验证（PR #872）。Boot 3.4 线要求 `3.4.7+`，Boot 3.5 线要求 `3.5.1+`，共同要求 Framework `6.2.8`；Boot `3.5.0` 不满足此下限。Gateway 保持各自既有 Cloud/Boot 组合。Java 8 / 17 下限不变，Boot4 springdoc 仍为 `3.0.3`。
+- OAS 3.1 raw Java `Object` 字段与 `List<Object>` 元素默认不声明对象类型，允许任意 JSON 值。需保留对象约束的应用可显式配置 `springdoc.explicit-object-schema=true` 或字段级 `@Schema(type = "object")`，见[迁移配置](https://knife4jnext.com/reference/configuration#生成-openapi-3-1-文档)。
+- 修复 React WebJar 热工作区消费旧 core/schema 编译产物：显式构建当前源码，编译失败在 Vite 前停止（PR #871）。
+- OAS2 Vue3 工具链迁移至 Vite `8.3.4`，JS/CSS 最低浏览器提高至 Chrome/Edge `111`、Firefox `114`、Safari `16.4`；仅适用于 OAS2 Vue3，React UI 浏览器要求不变（PR #881）；修复增量 WebJar 打包残留旧分块、图标、gzip 和源码包生命周期问题，保护外部符号链接目标（PR #882）。OAS2 仍为兼容维护。
+- 发布工作流固定 Maven `3.9.16`，支持未发布既有标签的恢复，并校验目标主构件未发布；本次沿用已合并的发布流程（PR #873）。
+
+**共享 React UI 与 Go**
+
+- Schema 字段说明列展示枚举与默认值，长枚举展开后不再重复显示摘要（PR #876）。
+- OAS3 编译器通过 `@typescript/native`（TypeScript `7.0.2`）/ `typescript`（`@typescript/typescript6` `6.0.2`）双别名迁移，保留既有输出目标、包入口和公开 API（PR #878）。
+- Knife4x Go `v0.8.7` 同步上述共享 UI 与重新构建的内嵌资产；公共库保持 Go `1.22`、module、Handler API 与路由语义。独立 Gin 示例更新依赖并要求 Go `1.26+`，不会将其依赖传递给公共库（PR #875）。
+
+OpenAPI 3.0 / 3.1 / 3.2 消费范围保持不变，生产 springdoc 仍生成 3.0 / 3.1，不承诺生成 3.2。历史版本的依赖与兼容记录保持原样。
+
+### 5.7.7
 
 `5.7.7` 是基于 `5.7.6` 的向后兼容补丁版本，纳入已合并的 Java 依赖维护、共享 React UI 工具链迁移与 WebJar 增量打包修复。同步发布 Knife4x Go `v0.8.6`。
 
@@ -695,7 +715,7 @@ Maven 坐标：
 <dependency>
     <groupId>com.baizhukui</groupId>
     <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
-    <version>5.7.7</version>
+    <version>5.7.8</version>
 </dependency>
 ```
 
