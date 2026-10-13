@@ -19,9 +19,9 @@ title: 发布说明
 **Java 兼容与发布产物**
 
 - Boot3 Jakarta MVC、WebFlux、独立聚合升级至 springdoc `2.9.1`；Swagger Jakarta annotations / models / core 统一为 `2.2.55`，使用真实 Boot BOM 编译和验证（PR #872）。Boot 3.4 线要求 `3.4.7+`，Boot 3.5 线要求 `3.5.1+`，共同要求 Framework `6.2.8`；Boot `3.5.0` 不满足此下限。Gateway 保持各自既有 Cloud/Boot 组合。Java 8 / 17 下限不变，Boot4 springdoc 仍为 `3.0.3`。
-- OAS 3.1 raw Java `Object` 字段与 `List<Object>` 元素默认不声明对象类型，允许任意 JSON 值。需保留对象约束的应用可显式配置 `springdoc.explicit-object-schema=true` 或字段级 `@Schema(type = "object")`，见[迁移配置](/reference/configuration#生成-openapi-3-1-文档)。
+- OAS 3.1 raw Java `Object` 字段与 `List<Object>` 元素默认不声明对象类型，允许任意 JSON 值。需保留对象约束的应用可显式配置 `springdoc.explicit-object-schema=true` 或字段级 `@Schema(type = "object")`，见[迁移配置](https://knife4jnext.com/reference/configuration#生成-openapi-3-1-文档)。
 - 修复 React WebJar 热工作区消费旧 core/schema 编译产物：显式构建当前源码，编译失败在 Vite 前停止（PR #871）。
-- OAS2 Vue3 工具链迁移至 Vite `8.3.4`（PR #881）；修复增量 WebJar 打包残留旧分块、图标、gzip 和源码包生命周期问题，保护外部符号链接目标（PR #882）。OAS2 仍为兼容维护。
+- OAS2 Vue3 工具链迁移至 Vite `8.3.4`，JS/CSS 最低浏览器提高至 Chrome/Edge `111`、Firefox `114`、Safari `16.4`；仅适用于 OAS2 Vue3，React UI 浏览器要求不变（PR #881）；修复增量 WebJar 打包残留旧分块、图标、gzip 和源码包生命周期问题，保护外部符号链接目标（PR #882）。OAS2 仍为兼容维护。
 - 发布工作流固定 Maven `3.9.16`，支持未发布既有标签的恢复，并校验目标主构件未发布；本次沿用已合并的发布流程（PR #873）。
 
 **共享 React UI 与 Go**

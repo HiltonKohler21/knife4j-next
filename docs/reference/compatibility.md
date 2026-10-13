@@ -36,6 +36,12 @@ Boot4 依赖仍为 Boot `4.0.8` / Cloud `2025.1.3`。
 `5.7.7` 及更早版本历史记录不变，完整差异见[5.7.8 依赖更新](./version-ref#5-7-8-依赖更新)。
 :::
 
+## 浏览器基线
+
+`5.7.8` 的 OAS2 Vue3 WebJar 采用 Vite `8.3.4`，JS/CSS 最低浏览器为 Chrome/Edge `111`、
+Firefox `114`、Safari `16.4`。这是相对旧版提高的 OAS2 下限，旧浏览器用户升级前须确认环境。
+该调整仅适用于 OAS2 Vue3，React UI 的浏览器要求保持不变（PR #881）。
+
 ## Starter 兼容矩阵
 
 以下 starter 矩阵描述 `5.7.8`，Boot3 生成器线按上述下限接入；历史发布版本见[版本对照](./version-ref)。矩阵基于 `knife4j-smoke-tests` 模块的自动化验证结果。✅ = smoke test 已通过；⚠️ = 依赖层面可用但无自动测试；❌ = 不兼容。
