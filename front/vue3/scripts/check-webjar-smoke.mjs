@@ -72,6 +72,10 @@ async function checkStartup(prefix, gatewayCode) {
     virtualConsole,
   })
   const { window } = dom
+  // Modal measures scrollbar pseudo-elements; jsdom has no layout/pseudo styles.
+  // Keep element styles for visibility checks, and verify geometry in Chromium.
+  const getComputedStyle = window.getComputedStyle.bind(window)
+  window.getComputedStyle = element => getComputedStyle(element)
   window.matchMedia = query => ({ matches: false, media: query, addListener() {}, removeListener() {}, addEventListener() {}, removeEventListener() {} })
   window.ResizeObserver = class { observe() {} unobserve() {} disconnect() {} }
   window.TextEncoder = TextEncoder
@@ -135,6 +139,42 @@ async function checkStartup(prefix, gatewayCode) {
       assert.equal(request.headers['knife4j-gateway-code'], gatewayCode, `Missing desktop behavior on ${endpoint}`)
     }
     assert(!requests.some(req => /swagger-config|services\.json|jf-swagger/.test(req.path)), 'Wrong release mode')
+    // Exercise the packaged component runtime: Modal open/close and Form submit
+    // must keep working when the component library changes its controlled API.
+    async function waitFor(predicate, label) {
+      const deadline = Date.now() + 5000
+      while (!predicate()) {
+        assert.equal(errors.length, 0, errors.join('\n'))
+        assert(Date.now() < deadline, label)
+        await new Promise(resolve => setTimeout(resolve, 25))
+      }
+    }
+    const document = window.document
+    window.location.hash = '/documentManager/GlobalParameters-default'
+    await waitFor(() => document.querySelector('.globalparameters button'), 'Global parameters did not render')
+    document.querySelector('.globalparameters button').click()
+    const modalOpen = () => {
+      const wrap = document.querySelector('.ant-modal-wrap')
+      return wrap && window.getComputedStyle(wrap).display !== 'none'
+    }
+    await waitFor(modalOpen, 'Global parameter modal did not open')
+    const inputs = document.querySelectorAll('.ant-modal input.ant-input')
+    assert.equal(inputs.length, 2, 'Expected parameter name and value inputs')
+    for (const [index, value] of ['X-Component-Probe', 'fixture-only'].entries()) {
+      inputs[index].value = value
+      inputs[index].dispatchEvent(new window.Event('input', { bubbles: true }))
+    }
+    document.querySelector('.ant-modal-footer .ant-btn-primary').click()
+    await waitFor(() => !modalOpen(), 'Successful form submit did not close the modal')
+    await waitFor(() => document.querySelector('.globalparameters tbody')?.textContent.includes('X-Component-Probe'), 'Submitted parameter did not appear in the table')
+    assert(document.querySelector('.globalparameters tbody').textContent.includes('fixture-only'), 'Submitted parameter value was lost')
+    document.querySelector('.globalparameters button').click()
+    await waitFor(modalOpen, 'Global parameter modal did not reopen')
+    document.querySelector('.ant-modal-footer button').click()
+    await waitFor(() => !modalOpen(), 'Cancel did not close the modal')
+    document.querySelector('.globalparameters tbody button').click()
+    await waitFor(() => !document.querySelector('.globalparameters tbody')?.textContent.includes('X-Component-Probe'), 'Delete did not remove the parameter')
+    assert.equal(errors.length, 0, errors.join('\n'))
     console.log(`WebJar behavior OK: ${prefix}doc.html, Springfox + desktop ${gatewayCode}`)
   } finally {
     await Promise.allSettled(preloadFetches)

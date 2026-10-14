@@ -1,4 +1,5 @@
 import { createApp, defineAsyncComponent } from 'vue'
+import 'ant-design-vue/dist/reset.css'
 import './style/knife4j.less'
 import App from './App.vue'
 import { setupStore } from './store/index.js'

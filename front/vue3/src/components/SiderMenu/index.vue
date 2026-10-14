@@ -206,7 +206,6 @@ export default {
 @import "./index.less";
 </style>
 <style lang="less">
-@import "~ant-design-vue/lib/style/themes/default.less";
 
 .left-menu {
   position: fixed;

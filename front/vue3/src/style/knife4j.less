@@ -1,5 +1,3 @@
-//@import "~ant-design-vue/dist/antd.less";
-//@import "~ant-design-vue/lib/style/themes/default.less";
 @contentHeight: calc(100vh - 64px);
 @contentAllHeight: calc(100vh);
 @DebugContentBodyHeight: calc(100vh - 395px);
@@ -10,6 +8,20 @@
 @GlobalBackgroundColor: #001529;
 @GlobalSubMenuBackgroundColor: #000c17;
 @menu-collapsed-width: 70px;
+
+// Retain the existing sidebar alignment/density with v4's inset menu items.
+.knife4j-menu,
+.knife4j-menu-all {
+  .ant-menu-item,
+  .ant-menu-submenu-title {
+    width: 100%;
+    margin-inline: 0;
+  }
+
+  .ant-menu-item:not(:last-child) {
+    margin-bottom: 8px;
+  }
+}
 
 .knife4j {
   padding: 0px;
