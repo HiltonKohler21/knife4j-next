@@ -1,7 +1,11 @@
+import assert from 'node:assert/strict'
+import { createApp } from 'vue'
 import {
   DEFAULT_LANGUAGE,
   SUPPORTED_LANGUAGES,
   messages,
+  normalizeLanguage,
+  setupI18n,
 } from '../src/lang/index.js'
 import {
   beginDocumentRequest,
@@ -13,6 +17,44 @@ import {
 
 const expectedLanguages = ['zh-CN', 'en-US', 'ja-JP']
 const failures = []
+
+// Exercise the installed plugin, not just the dictionary shape. These are the
+// same global translation/locale APIs used by templates and language switching.
+const app = createApp({})
+setupI18n(app)
+const globals = app.config.globalProperties
+assert.equal(globals.$i18n.locale, 'zh-CN')
+let translatedMessages = 0
+
+function checkLiteralMessages(value, key = '') {
+  for (const [name, message] of Object.entries(value)) {
+    const messageKey = key ? `${key}.${name}` : name
+    if (typeof message === 'string') {
+      // Message grammar and HTML need their own contracts; do not reinterpret
+      // legacy raw dictionary values as plain $t messages during this upgrade.
+      if (!/[{}@|<>]/.test(message)) {
+        assert.equal(globals.$t(messageKey), message, `${globals.$i18n.locale}: ${messageKey}`)
+        translatedMessages++
+      }
+    } else if (message && typeof message === 'object') {
+      checkLiteralMessages(message, messageKey)
+    }
+  }
+}
+
+try {
+  for (const language of [...expectedLanguages, DEFAULT_LANGUAGE]) {
+    globals.$i18n.locale = language
+    assert.equal(normalizeLanguage(language), language)
+    checkLiteralMessages(messages[language])
+    assert.deepEqual(globals.$tm('menu.menuItemList'), messages[language].menu.menuItemList)
+    assert.equal(globals.$t('app.loading'), messages[language].app.loading)
+  }
+  assert.equal(normalizeLanguage('unsupported'), DEFAULT_LANGUAGE)
+  assert.equal(normalizeLanguage(undefined), DEFAULT_LANGUAGE)
+} finally {
+  globals.$i18n.locale = DEFAULT_LANGUAGE
+}
 
 if (DEFAULT_LANGUAGE !== 'zh-CN') {
   failures.push(`default language must be zh-CN, got ${DEFAULT_LANGUAGE}`)
@@ -146,4 +188,4 @@ if (failures.length > 0) {
   process.exit(1)
 }
 
-console.log(`i18n check passed for ${SUPPORTED_LANGUAGES.join(', ')}`)
+console.log(`i18n check passed for ${SUPPORTED_LANGUAGES.join(', ')} (${translatedMessages} runtime translations)`)
