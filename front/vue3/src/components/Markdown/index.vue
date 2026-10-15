@@ -5,33 +5,12 @@
 
 <script>
 import "@/assets/css/markdown-preview.css";
-import { marked } from 'marked';
+import { marked, enableMarkdownCodeRenderer } from '@/core/markdown.js';
 import mermaid from 'mermaid';
 
 mermaid.initialize({ logLevel: 5, startOnLoad: false });
 
-// 按需加载
-// https://mermaid.js.org/config/usage.html
-var renderer = new marked.Renderer();
-renderer.code = function (code, language) {
-  if (language === 'mermaid') {
-    // mermaid 11: use <pre class="mermaid"> placeholder, then call mermaid.run() after mount
-    return '<pre class="mermaid">' + code + '</pre>';
-  }
-  else {
-    return '<pre><code class="language-' + language + '">' + code + '</code></pre>';
-  }
-};
-marked.setOptions({
-  gfm: true,
-  tables: true,
-  breaks: false,
-  pedantic: false,
-  sanitize: false,
-  smartLists: true,
-  smartypants: false,
-  renderer: renderer
-})
+enableMarkdownCodeRenderer();
 export default {
   name: "Markdown",
   props: {

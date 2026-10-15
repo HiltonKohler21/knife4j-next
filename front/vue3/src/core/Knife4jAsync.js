@@ -36,7 +36,7 @@ import { message } from 'ant-design-vue';
 import md5 from 'js-md5';
 import KUtils from './utils';
 import { KNIFE4J_ROUTE_PROXY_HEADER } from './routeProxyHeader.js';
-import { marked } from 'marked';
+import { marked } from './markdown.js';
 import async from 'async';
 import Knife4jOAS3ResponseExampleReader from './oas3/OAS3ResponseExampleReader';
 import Constants from '@/store/constants';
@@ -57,16 +57,6 @@ import {
 // import xml2js from 'xml2js';
 import DebugAxios from 'axios';
 import { useGlobalsStore } from '@/store/modules/global.js'
-
-marked.setOptions({
-  gfm: true,
-  tables: true,
-  breaks: false,
-  pedantic: false,
-  sanitize: false,
-  smartLists: true,
-  smartypants: false
-});
 
 function SwaggerBootstrapUi(options) {
   this.swaggerData = null;
