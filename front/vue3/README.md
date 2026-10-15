@@ -16,8 +16,8 @@ OAS2 兼容维护 UI（Vue 3 + Vite）。本目录产物被 `knife4j/knife4j-ope
 
 Vite 8.3.4 使用 Rolldown/Oxc 构建。JS 与 CSS 显式固定为 Chrome/Edge 111、Firefox 114、
 Safari 16.4 及以上；这是本次经维护者批准提高的 OAS2 Vue3 最低版本，不改变 React UI 的浏览器要求。
-源码开发、构建与验证要求 Node `^22.18.0 || >=24.11.0`：22 系列至少 22.18，24 系列至少 24.11；
-CI 持续验证这两个精确下限及 22/24 当前补丁。日常推荐使用受支持 LTS 的最新补丁，`.nvmrc` 继续选择 22 系列。
+源码开发、构建与验证要求 Node `>=24.11.0`。
+CI 持续验证精确下限 24.11.0 及 24 系列当前补丁。日常推荐使用受支持 LTS 的最新补丁，`.nvmrc` 选择 24 系列。
 `dev`、`build`、四发行模式、`preview` 和标准验证脚本会先检查 Node；Maven 调用相同的构建命令。
 该下限适用于本模块及包含其产物的完整源码构建；使用已发布 WebJar 的 Java 应用无需安装 Node，
 独立 OAS3/Go 模块的要求见 `.agent/RUNBOOK.md`，不随本次调整。

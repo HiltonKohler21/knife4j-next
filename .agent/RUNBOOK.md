@@ -5,7 +5,7 @@
 ## 环境
 
 - Java：`.java-version`
-- Node：`.nvmrc` 选择 22 系列，日常使用受支持 LTS 的最新补丁。Vue3 及包含其产物的完整源码构建要求 `^22.18.0 || >=24.11.0`；Vue3 CI 验证 22.18.0、24.11.0 和 22/24 当前补丁。独立 OAS3 工具链及 Knife4x UI 同步仍要求 Node 22.13+ 或 24+；ESLint 10 不支持 Node 23。
+- Node：`.nvmrc` 选择 24 系列，日常使用受支持 LTS 的最新补丁。Vue3 及包含其产物的完整源码构建要求 `>=24.11.0`；Vue3 CI 验证 24.11.0 和 24 系列当前补丁。独立 OAS3 工具链及 Knife4x UI 同步仍要求 Node 22.13+ 或 24+；ESLint 10 不支持 Node 23。
 - 前端包管理：bun（`front/`、`front/vue3/`、`docs/`）；CI / Demo / Release 基准版本读取根目录 `.bun-version`
 - CI：`.github/workflows/build.yml`、`release.yml`
 
