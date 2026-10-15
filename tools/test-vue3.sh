@@ -3,6 +3,12 @@ set -euo pipefail
 
 cd "$(dirname "$0")/../front/vue3"
 
+if ! command -v node >/dev/null 2>&1; then
+  echo "Vue3 requires Node.js >=24.11.0; install Node.js before running this check." >&2
+  exit 1
+fi
+node scripts/check-node.mjs
+
 bun install --frozen-lockfile
 bun run check:i18n
 bun run check:search-menu
