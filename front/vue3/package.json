@@ -16,7 +16,8 @@
     "build:Knife4jJFinal": "node scripts/check-node.mjs && cross-env VITE_RELEASE_APP_TYPE=Knife4jJFinal vite build",
     "build:Knife4jFront": "node scripts/check-node.mjs && cross-env VITE_RELEASE_APP_TYPE=Knife4jFront vite build",
     "preview": "node scripts/check-node.mjs && vite preview",
-    "check:node": "node scripts/check-node.mjs"
+    "check:node": "node scripts/check-node.mjs",
+    "check:webjar-resources": "node --test scripts/check-webjar-resources.test.mjs"
   },
   "dependencies": {
     "@ant-design/icons-vue": "7.0.1",
@@ -53,9 +54,9 @@
     "vite-plugin-compression": "^0.5.1",
     "vite-plugin-node-polyfills": "0.28.0",
     "vite-plugin-remove-console": "^2.1.1",
-    "jsdom": "26.1.0"
+    "jsdom": "30.1.3"
   },
   "engines": {
-    "node": ">=24.11.0"
+    "node": "^24.15.0 || >=26.0.0"
   }
 }

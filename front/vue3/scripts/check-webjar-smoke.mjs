@@ -3,7 +3,8 @@ import { readFile } from 'node:fs/promises'
 import { createServer } from 'node:http'
 import path from 'node:path'
 import { SourceTextModule } from 'node:vm'
-import { JSDOM, ResourceLoader, VirtualConsole } from 'jsdom'
+import { JSDOM, VirtualConsole } from 'jsdom'
+import { createWebJarResources, collectWebJarJsdomError } from './webjar-resources.mjs'
 
 // Execute the actual packaged ES modules, without depending on minifier syntax.
 // This checks startup requests, not browser layout or the minimum browser versions.
@@ -13,14 +14,6 @@ const fixture = JSON.parse(await readFile(new URL('./fixtures/swagger2-smoke.jso
 const html = await readFile(path.join(resourceRoot, 'doc.html'), 'utf8')
 let requests = []
 let origin
-
-function resourcePath(url) {
-  assert.equal(url.origin, origin, `External resource is forbidden: ${url}`)
-  const relative = decodeURIComponent(url.pathname.replace(/^\/demo\//, '/')).replace(/^\//, '')
-  const resolved = path.resolve(resourceRoot, relative)
-  assert(resolved.startsWith(resourceRoot + path.sep), `Resource escapes the WebJar: ${url}`)
-  return resolved
-}
 
 const server = createServer(async (req, res) => {
   const url = new URL(req.url, origin)
@@ -48,12 +41,7 @@ await new Promise((resolve, reject) => {
 })
 origin = `http://127.0.0.1:${server.address().port}`
 
-class LocalResources extends ResourceLoader {
-  fetch(url, options) {
-    resourcePath(new URL(url))
-    return super.fetch(url, options)
-  }
-}
+const { resourcePath, ...resourceOptions } = createWebJarResources({ resourceRoot, origin })
 
 async function checkStartup(prefix, gatewayCode) {
   requests = []
@@ -61,14 +49,13 @@ async function checkStartup(prefix, gatewayCode) {
   const virtualConsole = new VirtualConsole()
   virtualConsole.on('error', (...args) => errors.push(args.map(String).join(' ')))
   virtualConsole.on('jsdomError', error => {
-    // jsdom's CSS parser does not implement the new minifier's full CSS syntax.
-    if (error.type !== 'css parsing') errors.push(error.message)
+    collectWebJarJsdomError(errors, error)
   })
   const dom = new JSDOM(html, {
     url: `${origin}${prefix}doc.html`,
     runScripts: 'outside-only',
     pretendToBeVisual: true,
-    resources: new LocalResources(),
+    ...resourceOptions,
     virtualConsole,
   })
   const { window } = dom

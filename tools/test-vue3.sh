@@ -4,7 +4,7 @@ set -euo pipefail
 cd "$(dirname "$0")/../front/vue3"
 
 if ! command -v node >/dev/null 2>&1; then
-  echo "Vue3 requires Node.js >=24.11.0; install Node.js before running this check." >&2
+  echo "Vue3 requires Node.js ^24.15.0 || >=26.0.0; install Node.js before running this check." >&2
   exit 1
 fi
 node scripts/check-node.mjs
@@ -16,6 +16,7 @@ bun run check:store
 bun run check:router
 bun run check:codegen
 bun run check:markdown
+bun run check:webjar-resources
 bun run build:Knife4jSpringUi
 
 required_files=(
