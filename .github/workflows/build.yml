@@ -209,6 +209,10 @@ jobs:
     needs: changes
     if: needs.changes.outputs.vue3 == 'true'
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: ["22.18.0", "24.11.0", "22", "24"]
     defaults:
       run:
         working-directory: .
@@ -219,7 +223,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v6
         with:
-          node-version-file: .nvmrc
+          node-version: ${{ matrix.node-version }}
 
       - name: Set up bun
         uses: oven-sh/setup-bun@v2
