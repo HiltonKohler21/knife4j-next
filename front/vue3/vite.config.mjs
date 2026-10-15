@@ -56,6 +56,8 @@ export default defineConfig({
     vue(),
     vueJsx(),
     Components({
+      // 保持现有 Vue 模板声明范围，不生成 TSX 全局变量声明。
+      dtsTsx: false,
       resolvers: [AntDesignVueResolver({ importStyle: false })]
     }),
     nodePolyfills(),
