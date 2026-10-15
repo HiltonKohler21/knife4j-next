@@ -242,8 +242,14 @@ export function getBaseType(type) {
  * @param {string} name
  * @returns
  */
-function getReferenceTSType (name) {
-  return t.tsTypeReference(t.identifier(name))
+function getReferenceTSType (name, typeArguments) {
+  const reference = t.tsTypeReference(t.identifier(name))
+  // ast-types uses the Babel 7 field; Babel 8 reads typeArguments instead.
+  delete reference.typeParameters
+  if (typeArguments) {
+    reference.typeArguments = t.tsTypeParameterInstantiation(typeArguments)
+  }
+  return reference
 }
 
 /**
@@ -251,13 +257,10 @@ function getReferenceTSType (name) {
  * @returns
  */
 function getRecordAny() {
-  return t.tsTypeReference(
-    t.identifier('Record'),
-    t.tsTypeParameterInstantiation([
-      t.tsStringKeyword(),
-      t.tsUnknownKeyword()
-    ])
-  )
+  return getReferenceTSType('Record', [
+    t.tsStringKeyword(),
+    t.tsUnknownKeyword()
+  ])
 }
 
 /**
@@ -498,14 +501,7 @@ export function getTsInterfaceDeclaration(prop, interfaceName, openOptional) {
   )
   const resType = resParam.type === 'array' ? `${interfaceName}Res[]` : `${interfaceName}Res`;
   declaration.returnType = t.tsTypeAnnotation(
-    t.tsTypeReference(
-      t.identifier('Promise'),
-      t.tsTypeParameterInstantiation( //泛型
-        [t.tsTypeReference(
-          t.identifier(resType),
-        )]
-      )
-    )
+    getReferenceTSType('Promise', [getReferenceTSType(resType)])
   )
   return generate(t.exportNamedDeclaration(declaration)).code;
 }
