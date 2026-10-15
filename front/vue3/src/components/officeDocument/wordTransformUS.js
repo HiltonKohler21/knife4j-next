@@ -1,15 +1,5 @@
 import KUtils from '@/core/utils'
-import { marked } from 'marked'
-
-marked.setOptions({
-  gfm: true,
-  tables: true,
-  breaks: false,
-  pedantic: false,
-  sanitize: false,
-  smartLists: true,
-  smartypants: false
-})
+import { marked } from '@/core/markdown.js'
 
 /**
  * 根据当前swagger分组实例得到当前组下word文本

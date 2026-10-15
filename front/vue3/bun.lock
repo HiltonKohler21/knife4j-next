@@ -19,7 +19,7 @@
         "json5": "^2.2.3",
         "localforage": "^1.10.0",
         "lodash": "^4.17.21",
-        "marked": "5.1.0",
+        "marked": "18.1.1",
         "mermaid": "^11.17.2",
         "pinia": "4.1.0",
         "qs": "^6.16.1",
@@ -722,7 +722,7 @@
 
     "make-dir": ["make-dir@5.1.0", "https://registry.npmmirror.com/make-dir/-/make-dir-5.1.0.tgz", {}, "sha512-IfpFq6UM39dUNiphpA6uDezNx/AvWyhwfICWPR3t1VspkgkMZrL+Rk1RbN1bx+aeNYwOrqGJgEgV3yotk+ZUVw=="],
 
-    "marked": ["marked@5.1.0", "https://registry.npmmirror.com/marked/-/marked-5.1.0.tgz", { "bin": { "marked": "bin/marked.js" } }, "sha512-z3/nBe7aTI8JDszlYLk7dDVNpngjw0o1ZJtrA9kIfkkHcIF+xH7mO23aISl4WxP83elU+MFROgahqdpd05lMEQ=="],
+    "marked": ["marked@18.1.1", "https://registry.npmmirror.com/marked/-/marked-18.1.1.tgz", { "bin": { "marked": "bin/marked.js" } }, "sha512-zEGgrtUG8crk+TrMacJSVABU4DYDDkS8uqgU3ohrn/2fW9C2AEfUrO3m6IhpIpQpl7YcVpiXXC9cSMWDANT3dg=="],
 
     "math-intrinsics": ["math-intrinsics@1.1.0", "https://registry.npmmirror.com/math-intrinsics/-/math-intrinsics-1.1.0.tgz", {}, "sha512-/IXtbwEk5HTPyEwyKX6hGkYXxM9nbj64B+ilVJnC/R6B0pH5G4V3b0pVbL7DBj4tkhBAppbQUlf6F6Xl9LHu1g=="],
 
