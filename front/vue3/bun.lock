@@ -8,7 +8,7 @@
         "@ant-design/icons-vue": "7.0.1",
         "@babel/generator": "8.0.6",
         "@vue/devtools-api": "8.2.1",
-        "ace-builds": "1.22.0",
+        "ace-builds": "1.44.0",
         "ant-design-vue": "4.2.6",
         "ast-types": "0.16.3",
         "async": "^3.2.4",
@@ -300,7 +300,7 @@
 
     "@vue/shared": ["@vue/shared@3.5.44", "https://registry.npmmirror.com/@vue/shared/-/shared-3.5.44.tgz", {}, "sha512-H82XLH0DjmSOdbEwO15x3QTo1f5PWEtv237eLpYKc0mqLu+B8hnq16lFWmuBmNurkeiG3wr+oM1FhOll/YVFRg=="],
 
-    "ace-builds": ["ace-builds@1.22.0", "https://registry.npmmirror.com/ace-builds/-/ace-builds-1.22.0.tgz", {}, "sha512-7IlgBtb/A1qljFLB9Xz+Cuv3vILYHLpxE+9gpujoCzI1G0RpCPc1TKzoCbJ+IWIWtdtbJ0BdXKg3AsO3ZUJosw=="],
+    "ace-builds": ["ace-builds@1.44.0", "https://registry.npmmirror.com/ace-builds/-/ace-builds-1.44.0.tgz", {}, "sha512-PFNMSYqFdEUkul2Ntud0HvA09AgY+F1ag0UYdpMH60wNI/qOA8cB8tlTgoALMEwIdUPJK2CjrIQ7OnbiSS/ugQ=="],
 
     "acorn": ["acorn@8.16.0", "https://registry.npmmirror.com/acorn/-/acorn-8.16.0.tgz", { "bin": { "acorn": "bin/acorn" } }, "sha512-UVJyE9MttOsBQIDKw1skb9nAwQuR5wuGD3+82K6JgJlm/Y+KI92oNsMNGZCYdDsVtRHSak0pcV5Dno5+4jh9sw=="],
 
