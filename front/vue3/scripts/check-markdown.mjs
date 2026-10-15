@@ -96,7 +96,38 @@ function wordFixture() {
     markdownFiles: [{ name: '指南', children: [{ title: '详情', content }, { title: '第二篇', content: '# 中文 API' }] }]
   }
 }
+// Preserve legacy heading IDs both before and after component activation.
+function checkLegacyHeadingIds() {
+  const cases = [
+    ['`<a>`', 'a'],
+    ['`a &amp; b`', 'a-amp-b'],
+    ['`a&#65;b`', 'a65b'],
+    ['<https://example.com/?a=b&c=d>', 'httpsexamplecomabcd'],
+    ['https://example.com/?a=b&c=d', 'httpsexamplecomabcd'],
+    ['**a `x &amp; y` [*L*](https://example.com)**', 'a-x-amp-y-l'],
+    ['[**`<a>`**](https://example.com)', 'a'],
+    ['![**A** `<x>` &amp; &#65;](image.png)', 'a-x--a'],
+    ['[![`<a>` &amp;](image.png)](https://example.com)', 'a'],
+    ['![<em>image</em> **label** &copy;](image.png)', 'emimageem-label'],
+    ['a &b &amp; &#65; \\<x\\>', 'a-b--a-x'],
+    ['a &unknown; b &missing c', 'a--b-missing-c'],
+    ['a&#x1F600;b', 'a\uf600b'], // V5 used String.fromCharCode, not fromCodePoint.
+    ['<code>a &b <c></code>', 'a--'],
+    ['<pre>a &amp; b</pre>', 'a--b']
+  ]
+  for (const [source, id] of cases) {
+    const html = marked.parse('# ' + source)
+    assert.equal(documentFor(html).querySelector('h1').id, id, source)
+    assert.equal(marked.parse('# ' + source), html, 'heading ID state resets: ' + source)
+  }
+  const duplicates = '# `<a>`\n\n# a\n\n# `<a>`\n\n# a-1\n\n# a'
+  assert.deepEqual([...documentFor(marked.parse(duplicates)).querySelectorAll('h1')].map(node => node.id), ['a', 'a-1', 'a-2', 'a-1-1', 'a-3'])
+  assert.equal(documentFor(marked.parse('# `<a>`')).querySelector('code').textContent, '<a>')
+  assert.equal(documentFor(marked.parse('# `a &amp; b`')).querySelector('code').textContent, 'a &amp; b')
+}
+
 function checkConsumers(componentLoaded) {
+  checkLegacyHeadingIds()
   const context = { currentInstance: {} }
   parseInfo.call(context, { swagger: '2.0', host: 'example.com', info: { title: 'Demo', description: content }, paths: {} })
   checkContent(context.currentInstance.description, componentLoaded)

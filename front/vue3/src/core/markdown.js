@@ -25,6 +25,32 @@ import { marked, TextRenderer } from 'marked'
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+// Marked 5 escaped inline token text during lexing. Marked 18 leaves code
+// spans/autolinks raw and decodes entities in text tokens. Reconstruct only
+// the legacy heading-ID input; the visible heading still uses its renderer.
+function escapeHeadingText(text, encode = false) {
+  const replacements = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }
+  const pattern = encode ? /[&<>"']/g : /[<>"']|&(?!(#\d{1,7}|#[Xx][a-fA-F0-9]{1,6}|\w+);)/g
+  return text.replace(pattern, character => replacements[character])
+}
+
+function legacyHeadingText(tokens, parser) {
+  const renderer = new TextRenderer()
+  const inline = token => parser.parseInline(token.tokens, renderer)
+  renderer.strong = renderer.em = renderer.del = inline
+  renderer.link = token => token.autolink ? escapeHeadingText(token.text) : inline(token)
+  // V5 used the unparsed image label, even when it contained inline Markdown.
+  renderer.image = token => escapeHeadingText(token.text)
+  renderer.codespan = token => escapeHeadingText(token.text, true)
+  renderer.text = token => {
+    if (token.escaped) return token.text // raw HTML code/pre/script content
+    // Escape tokens contain the decoded character; ordinary text must use raw
+    // to retain V5 numeric/named entity handling in headingText below.
+    return escapeHeadingText(token.type === 'escape' ? token.text : token.raw)
+  }
+  return parser.parseInline(tokens, renderer)
+}
+
 function headingText(text) {
   return text.replace(/&(#(?:\d+)|(?:#x[0-9A-Fa-f]+)|(?:\w+));?/ig, (_, entity) => {
     entity = entity.toLowerCase()
@@ -71,7 +97,7 @@ marked.use({
         headingsByParser.set(this.parser, seen)
       }
       const text = this.parser.parseInline(tokens)
-      const raw = headingText(this.parser.parseInline(tokens, new TextRenderer()))
+      const raw = headingText(legacyHeadingText(tokens, this.parser))
       return `<h${depth} id="${headingId(raw, seen)}">${text}</h${depth}>\n`
     }
   }
