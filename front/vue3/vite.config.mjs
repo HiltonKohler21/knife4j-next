@@ -9,6 +9,13 @@ import path, {resolve} from 'path'
 import {nodePolyfills} from 'vite-plugin-node-polyfills'
 import fs from 'fs'
 import { fileURLToPath } from 'url'
+import { createRequire } from 'module'
+
+const require = createRequire(import.meta.url)
+const { theme } = require('ant-design-vue')
+const convertLegacyToken = require('ant-design-vue/lib/theme/convertLegacyToken').default
+// v4 不再提供 Less 文件；让现有布局样式继续使用对应的官方主题变量。
+const legacyTheme = convertLegacyToken(theme.defaultAlgorithm(theme.defaultSeed))
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const browserTargets = ['chrome111', 'edge111', 'firefox114', 'safari16.4']
@@ -49,7 +56,7 @@ export default defineConfig({
     vue(),
     vueJsx(),
     Components({
-      resolvers: [AntDesignVueResolver()]
+      resolvers: [AntDesignVueResolver({ importStyle: false })]
     }),
     nodePolyfills(),
     viteCompression({
@@ -76,7 +83,8 @@ export default defineConfig({
   css: {
     preprocessorOptions: {
       less: {
-        javascriptEnabled: true
+        javascriptEnabled: true,
+        modifyVars: legacyTheme
       }
     }
   },

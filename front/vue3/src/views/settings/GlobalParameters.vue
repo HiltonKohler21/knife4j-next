@@ -31,7 +31,7 @@
       </a-table>
     </div>
     <!--参数编辑及新增-->
-    <a-modal :title="modelTitle" forceRender :cancelText="$t('global.cancel')" :okText="$t('global.ok')" v-model:visible="visible"
+    <a-modal :title="modelTitle" forceRender :cancelText="$t('global.cancel')" :okText="$t('global.ok')" v-model:open="visible"
              @ok="handleOk" @cancel="handleCancel">
       <a-form :model="form" ref="formRef">
         <a-form-item

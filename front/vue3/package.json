@@ -14,10 +14,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@ant-design/icons-vue": "^6.1.0",
+    "@ant-design/icons-vue": "7.0.1",
     "@babel/generator": "^7.29.8",
     "ace-builds": "1.22.0",
-    "ant-design-vue": "^3.2.20",
+    "ant-design-vue": "4.2.6",
     "ast-types": "^0.14.2",
     "async": "^3.2.4",
     "axios": "^1.20.0",
