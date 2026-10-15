@@ -38,8 +38,8 @@ Boot4 依赖仍为 Boot `4.0.8` / Cloud `2025.1.3`。
 
 ## 浏览器基线
 
-`5.7.8` 的 OAS2 Vue3 WebJar 采用 Vite `8.3.4`，JS/CSS 最低浏览器为 Chrome/Edge `111`、
-Firefox `114`、Safari `16.4`。这是相对旧版提高的 OAS2 下限，旧浏览器用户升级前须确认环境。
+当前源码（待发布）的 OAS2 Vue3 WebJar 采用 Vite `8.3.4`，JS/CSS 最低浏览器为 Chrome/Edge `117`、
+Firefox `119`、Safari `17.4`。这是相对旧版提高的 OAS2 下限，旧浏览器用户升级前须确认环境。
 该调整仅适用于 OAS2 Vue3，React UI 的浏览器要求保持不变（PR #881）。
 
 ## Starter 兼容矩阵

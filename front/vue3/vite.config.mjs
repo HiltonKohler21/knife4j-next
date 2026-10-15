@@ -18,7 +18,7 @@ const convertLegacyToken = require('ant-design-vue/lib/theme/convertLegacyToken'
 const legacyTheme = convertLegacyToken(theme.defaultAlgorithm(theme.defaultSeed))
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const browserTargets = ['chrome111', 'edge111', 'firefox114', 'safari16.4']
+const browserTargets = ['chrome117', 'edge117', 'firefox119', 'safari17.4']
 
 /**
  * 把 Vite 默认把 public/oauth 复制到 dist/oauth 的产物
