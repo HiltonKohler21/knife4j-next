@@ -9,7 +9,7 @@ Thank you for your interest in contributing! This guide covers the development s
 git clone https://github.com/<your-username>/knife4j-next.git
 cd knife4j-next
 
-# 2. Install front-end dependencies (Node ≥ 24.11.0 for this full build, see .nvmrc; Bun baseline, see .bun-version)
+# 2. Install front-end dependencies (Node ^24.15.0 || >=26.0.0 for this full build (no Node 25), see .nvmrc; Bun baseline, see .bun-version)
 cd front && bun install --frozen-lockfile && cd ..
 
 # 3. Enable the versioned pre-commit checks (optional)
