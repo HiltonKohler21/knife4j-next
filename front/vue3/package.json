@@ -6,6 +6,7 @@
     "dev": "node scripts/check-node.mjs && vite",
     "check:i18n": "bun scripts/check-i18n.mjs",
     "check:search-menu": "bun scripts/check-search-menu.mjs",
+    "check:codegen": "node scripts/check-codegen.mjs",
     "check:router": "node scripts/check-router.mjs",
     "check:store": "bun scripts/check-store.mjs",
     "build": "node scripts/check-node.mjs && vite build",
@@ -18,7 +19,7 @@
   },
   "dependencies": {
     "@ant-design/icons-vue": "7.0.1",
-    "@babel/generator": "^7.29.8",
+    "@babel/generator": "8.0.6",
     "@vue/devtools-api": "8.2.1",
     "ace-builds": "1.22.0",
     "ant-design-vue": "4.2.6",
