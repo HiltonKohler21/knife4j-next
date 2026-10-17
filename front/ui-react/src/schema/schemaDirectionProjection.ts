@@ -690,12 +690,57 @@ export function createDirectionalSchemaProjection(
     return target;
   };
 
+  interface AnalysisInput {
+    readonly schema: JsonSchema;
+    readonly baseUri: string;
+    readonly dynamicScope: readonly string[];
+  }
+
+  // Suspend each DFS frame on the heap instead of nesting JavaScript calls.
+  // Generators preserve the existing traversal/short-circuit order and finally
+  // cleanup; the active path still defines the unchanged logical depth budget.
+  const runAnalysis = <Result>(
+    input: AnalysisInput,
+    steps: (input: AnalysisInput, active: Set<string>) => Generator<AnalysisInput, Result, Result>,
+  ): Result => {
+    const active = new Set<string>();
+    const stack = [steps(input, active)];
+    try {
+      let step = stack[0].next();
+      for (;;) {
+        if (step.done) {
+          stack.pop();
+          if (stack.length === 0) return step.value;
+          step = stack[stack.length - 1].next(step.value);
+        } else {
+          const child = steps(step.value, active);
+          stack.push(child);
+          step = child.next();
+        }
+      }
+    } finally {
+      // On an error, close suspended parents so their active-path cleanup runs.
+      // The completion values of these abandoned frames are never consumed.
+      for (let index = stack.length - 1; index >= 0; index -= 1) stack[index].return(undefined as never);
+    }
+  };
+
   const analyzeDirectionalAnnotation = (
     schema: JsonSchema,
     baseUri: string,
     dynamicScope: readonly string[],
-    active: Set<string> = new Set(),
-  ): DirectionalAnnotationAnalysis => {
+  ): DirectionalAnnotationAnalysis => runAnalysis({ schema, baseUri, dynamicScope }, directionalAnnotationSteps);
+
+  const analyzeDirectionalPropertyNames = (
+    schema: JsonSchema,
+    baseUri: string,
+    dynamicScope: readonly string[],
+  ): DirectionalPropertiesAnalysis => runAnalysis({ schema, baseUri, dynamicScope }, directionalPropertySteps);
+
+  function* directionalAnnotationSteps(
+    { schema, baseUri, dynamicScope }: AnalysisInput,
+    active: Set<string>,
+  ): Generator<AnalysisInput, DirectionalAnnotationAnalysis, DirectionalAnnotationAnalysis> {
     if (!isRecord(schema)) return { value: false, complete: true };
     const localBase = typeof schema.$id === 'string' ? resolveResource(schema.$id, baseUri) : baseUri;
     const localDynamicScope = dynamicScopeForSchema(dynamicScope, schema, baseUri);
@@ -717,12 +762,11 @@ export function createDirectionalSchemaProjection(
         if (typeof schema[keyword] !== 'string') continue;
         const target = resolveIndexedReference(keyword, schema[keyword] as string, localBase, localDynamicScope);
         if (target) {
-          const analysis = analyzeDirectionalAnnotation(
-            target.schema,
-            target.baseUri,
-            dynamicScopeWithResource(localDynamicScope, indexedResource(target)),
-            active,
-          );
+          const analysis = yield {
+            schema: target.schema,
+            baseUri: target.baseUri,
+            dynamicScope: dynamicScopeWithResource(localDynamicScope, indexedResource(target)),
+          };
           if (analysis.value) {
             directionalAnnotationCache.set(key, true);
             return { value: true, complete: true };
@@ -733,7 +777,7 @@ export function createDirectionalSchemaProjection(
       if (Array.isArray(schema.allOf)) {
         for (const branch of schema.allOf) {
           if (!isSchemaValue(branch)) continue;
-          const analysis = analyzeDirectionalAnnotation(branch, localBase, localDynamicScope, active);
+          const analysis = yield { schema: branch, baseUri: localBase, dynamicScope: localDynamicScope };
           if (analysis.value) {
             directionalAnnotationCache.set(key, true);
             return { value: true, complete: true };
@@ -746,19 +790,17 @@ export function createDirectionalSchemaProjection(
     } finally {
       active.delete(key);
     }
-  };
+  }
 
   /**
    * Collect annotations that are guaranteed to apply to the same object.
    * `$ref` and every `allOf` branch apply together; `oneOf`/`anyOf` remain
    * branch-local and must not leak directional fields into their siblings.
    */
-  const analyzeDirectionalPropertyNames = (
-    schema: JsonSchema,
-    baseUri: string,
-    dynamicScope: readonly string[],
-    active: Set<string> = new Set(),
-  ): DirectionalPropertiesAnalysis => {
+  function* directionalPropertySteps(
+    { schema, baseUri, dynamicScope }: AnalysisInput,
+    active: Set<string>,
+  ): Generator<AnalysisInput, DirectionalPropertiesAnalysis, DirectionalPropertiesAnalysis> {
     if (!isRecord(schema)) return { names: emptyDirectionalProperties, complete: true };
     const localBase = typeof schema.$id === 'string' ? resolveResource(schema.$id, baseUri) : baseUri;
     const localDynamicScope = dynamicScopeForSchema(dynamicScope, schema, baseUri);
@@ -793,12 +835,11 @@ export function createDirectionalSchemaProjection(
         if (typeof schema[keyword] !== 'string') continue;
         const target = resolveIndexedReference(keyword, schema[keyword] as string, localBase, localDynamicScope);
         if (target) {
-          const analysis = analyzeDirectionalPropertyNames(
-            target.schema,
-            target.baseUri,
-            dynamicScopeWithResource(localDynamicScope, indexedResource(target)),
-            active,
-          );
+          const analysis = yield {
+            schema: target.schema,
+            baseUri: target.baseUri,
+            dynamicScope: dynamicScopeWithResource(localDynamicScope, indexedResource(target)),
+          };
           addNames(analysis.names);
           complete &&= analysis.complete;
         }
@@ -806,7 +847,7 @@ export function createDirectionalSchemaProjection(
       if (Array.isArray(schema.allOf)) {
         for (const branch of schema.allOf) {
           if (!isSchemaValue(branch)) continue;
-          const analysis = analyzeDirectionalPropertyNames(branch, localBase, localDynamicScope, active);
+          const analysis = yield { schema: branch, baseUri: localBase, dynamicScope: localDynamicScope };
           addNames(analysis.names);
           complete &&= analysis.complete;
         }
@@ -816,7 +857,7 @@ export function createDirectionalSchemaProjection(
     } finally {
       active.delete(key);
     }
-  };
+  }
 
   const cloneData = (value: unknown): JsonValue => structuredClone(value) as JsonValue;
   const definitions = cloneRecord();

@@ -490,6 +490,68 @@ describe('SchemaDocumentSession', () => {
     expect(projection.referenceFor('#/components/schemas/Schema0')).toContain('/long-reference-chain/request/bundle#/');
   });
 
+  describe.each(['request', 'response'] as const)('%s analysis depth boundary', (direction) => {
+    test.each(['properties', 'annotation'] as const)(
+      'accepts exactly 2048 active %s nodes and rejects the 2049th',
+      (analysis) => {
+        const documentWithDepth = (depth: number): SwaggerDoc => {
+          // Annotation analysis starts at the property's ref wrapper, while
+          // property-name analysis starts directly at Schema0.
+          const schemaCount = analysis === 'annotation' ? depth - 1 : depth;
+          const chain = Object.fromEntries(
+            Array.from({ length: schemaCount }, (_, index) => [
+              `Schema${index}`,
+              index + 1 < schemaCount
+                ? { $ref: `#/components/schemas/Schema${index + 1}` }
+                : { type: 'object', [direction === 'request' ? 'readOnly' : 'writeOnly']: true },
+            ]),
+          );
+          return {
+            ...openApiDocument(),
+            components: {
+              schemas: {
+                ...(analysis === 'annotation'
+                  ? {
+                      Root: {
+                        type: 'object',
+                        properties: { value: { $ref: '#/components/schemas/Schema0' } },
+                        required: ['value'],
+                      },
+                    }
+                  : {}),
+                ...chain,
+              },
+            },
+          };
+        };
+        const project = (depth: number) =>
+          createDirectionalSchemaProjection(
+            documentWithDepth(depth),
+            retrievalUri,
+            direction,
+            'https://knife4j.invalid/schema-projections/exact-analysis-boundary/',
+          );
+
+        const projection = project(2048);
+        expect(projection.referenceFor('#/components/schemas/Schema0')).toContain(
+          `/exact-analysis-boundary/${direction}/bundle#/`,
+        );
+        if (analysis === 'annotation') {
+          const definitions = (projection.document as { $defs: Record<string, { required?: string[] }> }).$defs;
+          // Only Root declares required: the annotation at the far end must
+          // still remove its field in the matching request/response direction.
+          expect(Object.values(definitions).find((schema) => schema.required)?.required).toEqual([]);
+        }
+        expect(() => project(2049)).toThrowError(
+          expect.objectContaining({
+            code: 'SCHEMA_BUDGET_EXCEEDED',
+            details: { limit: 2048, actual: 2049 },
+          }),
+        );
+      },
+    );
+  });
+
   test('rejects reference chains before exhausting the JavaScript call stack', () => {
     const schemaCount = 5000;
     const schemas = Object.fromEntries(
