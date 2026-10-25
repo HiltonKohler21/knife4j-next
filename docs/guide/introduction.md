@@ -17,17 +17,17 @@ title: 产品介绍
 | 访问入口（doc.html / v2 / v3 api-docs） | 保留 | 完全一致 |
 | 仓库 | `xiaoymin/knife4j` | [`songxychn/knife4j-next`](https://github.com/songxychn/knife4j-next) |
 | 发布渠道 | Maven Central | Maven Central |
-| 当前版本 | `4.5.0`（最后一个 Maven Central 发布版本） | `5.7.9` |
+| 当前源码版本 | `4.5.0`（最后一个 Maven Central 发布版本） | `5.7.10`（待发布；最新已发布为 `5.7.9`） |
 | 文档站 | [doc.xiaominfo.com](https://doc.xiaominfo.com/) | 本站（`knife4jnext.com`） |
 
 **迁移的最小单位是改 `groupId`，业务代码、配置键、访问路径都不必动。** 详见 [迁移指引](./migration)。
 
 ## 这份 fork 想解决什么
 
-1. **兼容性修复**。upstream 对 Spring Boot 3.4 / 3.5 的适配步伐变慢，fork 已经升级 `springdoc-openapi-jakarta` 到 `2.9.1`，并通过 smoke-tests 覆盖 Boot 2.7.18 的 OAS2/OAS3、Boot 3.4.x/3.5.x Jakarta 与 Boot 4.0.8 Jakarta/Gateway/独立聚合组合。
+1. **兼容性修复**。upstream 对 Spring Boot 3.4 / 3.5 的适配步伐变慢，fork 已经升级 `springdoc-openapi-jakarta` 到 `2.9.1`，并通过 smoke-tests 覆盖 Boot 2.7.18 的 OAS2/OAS3、Boot 3.4.x/3.5.x Jakarta 与 Boot 4.1.2 Jakarta/Gateway/独立聚合组合。
 2. **安全修复**。修复了 `/v2/api-docs;xxx` 分号绕过 Basic 认证的漏洞（[#886](https://github.com/xiaoymin/knife4j/issues/886)），以及 gateway `context-path` 下聚合 host 少斜杠的问题（[#954](https://github.com/xiaoymin/knife4j/issues/954)）。
 3. **可重复发布流程**。`.github/workflows/release.yml` 通过 Central Publishing Plugin 直接推送 Maven Central，不依赖人工临场操作。
-4. **可试用的 Demo**。`knife4j-demo-openapi3`（Spring Boot 4.0 + OpenAPI 3 + React UI）和 `knife4j-demo-openapi2`（Spring Boot 2.7 + OpenAPI 2 + Vue 3 UI）两个示例工程都附带 Dockerfile，可分别本地运行或在线预览。
+4. **可试用的 Demo**。`knife4j-demo-openapi3`（Spring Boot 4.1.2 + OpenAPI 3 + React UI）和 `knife4j-demo-openapi2`（Spring Boot 2.7 + OpenAPI 2 + Vue 3 UI）两个示例工程都附带 Dockerfile，可分别本地运行或在线预览。
 
 ## 哪些是 **已经** 做了的
 
@@ -37,10 +37,10 @@ title: 产品介绍
 | --- | --- | --- |
 | Boot 2.7.18 starter + UI webjar | ✅ | [快速开始](./getting-started) |
 | Boot 3.4.x / 3.5.x 兼容 | ✅ | smoke-tests 模块 `boot3-jakarta-app`、`boot35-jakarta-app`、`boot35-gateway-webmvc-app` |
-| Boot 4.0.8 WebMVC starter | ✅ | smoke-tests 模块 `boot4-jakarta-app` |
-| Boot 4.0.8 Gateway starter | ✅ | smoke-tests 模块 `boot4-gateway-app` |
+| Boot 4.1.2 WebMVC starter | ✅ | smoke-tests 模块 `boot4-jakarta-app` |
+| Boot 4.1.2 Gateway starter | ✅ | smoke-tests 模块 `boot4-gateway-app` |
 | Boot 3.5 Gateway Server Web MVC starter | ✅ | smoke-tests 模块 `boot35-gateway-webmvc-app` |
-| Boot 4.0.8 独立聚合 starter | ✅ | smoke-tests 模块 `boot4-aggregation-app` |
+| Boot 4.1.2 独立聚合 starter | ✅ | smoke-tests 模块 `boot4-aggregation-app` |
 | /doc.html 分号绕过修复 | ✅ `#886` | [发布说明](../release-notes/) |
 | Gateway context-path 修复 | ✅ `#954` | [Gateway 接入](./gateway) |
 | React + Vite 新前端 webjar | ✅ | 在 `knife4j-openapi3-ui` 生效；`knife4j-openapi2-ui` 交由本仓库 `front/vue3` 维护 |
@@ -80,7 +80,7 @@ upstream 文档里列出的增强特性在本 fork 的实际实现状态，前�
 
 knife4j-next 从 `5.0.0` 起采用独立 [SemVer](https://semver.org/lang/zh-CN/) 版本号，与上游 knife4j 版本号无关：
 
-- **Patch**（`5.0.1`、`5.0.2`、`5.0.3`、`5.0.4`、`5.0.5`、`5.0.6`、`5.0.7`、`5.0.8`、`5.0.9`、`5.0.10`、`5.0.11`、`5.0.12`、`5.0.13`、`5.0.14`、`5.0.15`、`5.0.17`、`5.0.18`、`5.2.1`、`5.2.3`、`5.2.4`、`5.3.1`、`5.3.2`、`5.3.3`、`5.6.1`、`5.7.1`、`5.7.2`、`5.7.3`、`5.7.4`、`5.7.5`、`5.7.6`、`5.7.7`、`5.7.8`、`5.7.9`）：安全修复、Bug 修复与兼容体验改进。
+- **Patch**（`5.0.1`、`5.0.2`、`5.0.3`、`5.0.4`、`5.0.5`、`5.0.6`、`5.0.7`、`5.0.8`、`5.0.9`、`5.0.10`、`5.0.11`、`5.0.12`、`5.0.13`、`5.0.14`、`5.0.15`、`5.0.17`、`5.0.18`、`5.2.1`、`5.2.3`、`5.2.4`、`5.3.1`、`5.3.2`、`5.3.3`、`5.6.1`、`5.7.1`、`5.7.2`、`5.7.3`、`5.7.4`、`5.7.5`、`5.7.6`、`5.7.7`、`5.7.8`、`5.7.9`、`5.7.10`（待发布））：安全修复、Bug 修复与兼容体验改进。
 - **Minor**（`5.1.0`、`5.2.0`、`5.3.0`、`5.4.0`、`5.5.0`、`5.6.0`、`5.7.0`）：前端体验改动、新功能（向后兼容）。
 - **Major**（`6.0.0`）：破坏性变更。
 
