@@ -12,6 +12,9 @@ full=false
 while IFS= read -r path || [ -n "$path" ]; do
   saw_path=true
   case "$path" in
+    tools/aggregation-shared-sources.txt|tools/verify-aggregation-parity.py|tools/test-aggregation-parity.py)
+      java=true
+      ;;
     docs/*|tools/test-docs.sh)
       docs=true
       ;;
