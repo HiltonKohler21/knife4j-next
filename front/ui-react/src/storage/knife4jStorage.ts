@@ -1483,41 +1483,12 @@ function parseResetClaim(value: string | null): Knife4jStorageResetClaim | null 
   }
 }
 
-function resetClaimStorageKey(generation: string): string {
-  return `${KNIFE4J_STORAGE_PREFIXES.resetClaim}${generation}`;
-}
-
 function removeResetClaim(storage: Knife4jWebStorage, key: string): void {
   try {
     storage.removeItem(key);
   } catch {
     // Acquisition will report any storage failure that affects correctness.
   }
-}
-
-function listActiveResetClaims(
-  storage: Knife4jWebStorage,
-  now = Date.now(),
-): Array<{ key: string; claim: Knife4jStorageResetClaim }> {
-  const keys: string[] = [];
-  for (let index = 0; index < storage.length; index += 1) {
-    const key = storage.key(index);
-    if (key?.startsWith(KNIFE4J_STORAGE_PREFIXES.resetClaim)) keys.push(key);
-  }
-
-  const claims: Array<{ key: string; claim: Knife4jStorageResetClaim }> = [];
-  for (const key of keys) {
-    const claim = parseResetClaim(storage.getItem(key));
-    if (!claim || claim.expiresAt <= now) {
-      removeResetClaim(storage, key);
-      continue;
-    }
-    claims.push({ key, claim });
-  }
-  return claims.sort(
-    (left, right) =>
-      left.claim.createdAt - right.claim.createdAt || left.claim.generation.localeCompare(right.claim.generation),
-  );
 }
 
 function mutationClaimStorageKey(generation: string): string {
@@ -1655,6 +1626,10 @@ function releaseMutationLease(storage: Knife4jWebStorage, lease: Knife4jStorageR
   }
 }
 
+/** Publish reset state while the caller holds Web Locks or the mutation lease.
+ * The outer mutex already elects one writer; a second reset-claim election adds
+ * no exclusion. Keep the lease and durable generation for suspended/older tabs.
+ */
 async function acquireResetLease(
   storage: Knife4jWebStorage | null,
   result: Knife4jStorageCleanupResult,
@@ -1662,103 +1637,50 @@ async function acquireResetLease(
   onCoordinationError?: (error: unknown) => void,
 ): Promise<Knife4jStorageResetLease | null> {
   if (!storage) return null;
-
-  acquisition: for (;;) {
-    let current: Knife4jStorageResetLease | null = null;
-    let publishedClaimKey: string | null = null;
-    let candidateLease: Knife4jStorageResetLease | null = null;
-    try {
-      current = parseResetLease(storage.getItem(KNIFE4J_STORAGE_KEYS.resetLease));
+  let candidateLease: Knife4jStorageResetLease | null = null;
+  try {
+    for (;;) {
+      const current = parseResetLease(storage.getItem(KNIFE4J_STORAGE_KEYS.resetLease));
       if (current) observeResetSnapshot(current.generation, current.expiresAt > Date.now());
-      if (current && current.expiresAt > Date.now()) {
-        await waitForResetLeaseTurn(current);
-        continue;
-      }
-
-      const createdAt = Date.now();
-      const claim: Knife4jStorageResetClaim = {
-        version: KNIFE4J_STORAGE_RESET_LEASE_VERSION,
-        generation: createResetGeneration(),
-        createdAt,
-        expiresAt: createdAt + KNIFE4J_STORAGE_RESET_CLAIM_TTL_MS,
-      };
-      const claimKey = resetClaimStorageKey(claim.generation);
-      publishedClaimKey = claimKey;
-      storage.setItem(claimKey, JSON.stringify(claim));
-      await new Promise((resolve) => setTimeout(resolve, KNIFE4J_STORAGE_RESET_LEASE_POLL_MS));
-
-      for (;;) {
-        current = parseResetLease(storage.getItem(KNIFE4J_STORAGE_KEYS.resetLease));
-        if (current) observeResetSnapshot(current.generation, current.expiresAt > Date.now());
-        if (current && current.expiresAt > Date.now()) {
-          removeResetClaim(storage, claimKey);
-          publishedClaimKey = null;
-          await waitForResetLeaseTurn(current);
-          continue acquisition;
-        }
-
-        claim.expiresAt = Date.now() + KNIFE4J_STORAGE_RESET_CLAIM_TTL_MS;
-        storage.setItem(claimKey, JSON.stringify(claim));
-        const winner = listActiveResetClaims(storage)[0]?.claim;
-        if (winner?.generation !== claim.generation) {
-          await new Promise((resolve) => setTimeout(resolve, KNIFE4J_STORAGE_RESET_LEASE_POLL_MS));
-          continue;
-        }
-
-        current = parseResetLease(storage.getItem(KNIFE4J_STORAGE_KEYS.resetLease));
-        if (current && current.expiresAt > Date.now()) continue;
-
-        const lease: Knife4jStorageResetLease = {
-          version: KNIFE4J_STORAGE_RESET_LEASE_VERSION,
-          generation: claim.generation,
-          expiresAt: Date.now() + KNIFE4J_STORAGE_RESET_LEASE_TTL_MS,
-        };
-        storage.setItem(KNIFE4J_STORAGE_KEYS.resetLease, JSON.stringify(lease));
-        candidateLease = lease;
-        await new Promise((resolve) => setTimeout(resolve, KNIFE4J_STORAGE_RESET_LEASE_POLL_MS));
-
-        const persisted = parseResetLease(storage.getItem(KNIFE4J_STORAGE_KEYS.resetLease));
-        const confirmedWinner = listActiveResetClaims(storage)[0]?.claim;
-        if (persisted?.generation === lease.generation && confirmedWinner?.generation === claim.generation) {
-          storage.setItem(KNIFE4J_STORAGE_KEYS.resetGeneration, lease.generation);
-          if (storage.getItem(KNIFE4J_STORAGE_KEYS.resetGeneration) !== lease.generation) {
-            throw new Error('reset generation was not persisted');
-          }
-          removeResetClaim(storage, claimKey);
-          publishedClaimKey = null;
-          observeResetSnapshot(lease.generation, true);
-          return lease;
-        }
-
-        if (persisted) observeResetSnapshot(persisted.generation, persisted.expiresAt > Date.now());
-        if (persisted?.generation === lease.generation) {
-          storage.removeItem(KNIFE4J_STORAGE_KEYS.resetLease);
-          candidateLease = null;
-        }
-        await new Promise((resolve) => setTimeout(resolve, KNIFE4J_STORAGE_RESET_LEASE_POLL_MS));
-      }
-    } catch (error) {
-      onCoordinationError?.(error);
-      if (publishedClaimKey) removeResetClaim(storage, publishedClaimKey);
-      if (candidateLease) {
-        try {
-          const persisted = parseResetLease(storage.getItem(KNIFE4J_STORAGE_KEYS.resetLease));
-          if (persisted?.generation === candidateLease.generation) {
-            storage.removeItem(KNIFE4J_STORAGE_KEYS.resetLease);
-          }
-        } catch {
-          // The coordination failure below already makes the reset incomplete.
-        }
-      }
-      if (recordCoordinationFailure) {
-        recordFailure(result, {
-          area: 'localStorage',
-          key: KNIFE4J_STORAGE_KEYS.resetLease,
-          reason: `reset coordination failed: ${errorMessage(error)}`,
-        });
-      }
-      return null;
+      if (!current || current.expiresAt <= Date.now()) break;
+      await waitForResetLeaseTurn(current);
     }
+    const lease: Knife4jStorageResetLease = {
+      version: KNIFE4J_STORAGE_RESET_LEASE_VERSION,
+      generation: createResetGeneration(),
+      expiresAt: Date.now() + KNIFE4J_STORAGE_RESET_LEASE_TTL_MS,
+    };
+    candidateLease = lease;
+    storage.setItem(KNIFE4J_STORAGE_KEYS.resetLease, JSON.stringify(lease));
+    if (parseResetLease(storage.getItem(KNIFE4J_STORAGE_KEYS.resetLease))?.generation !== lease.generation) {
+      throw new Error('reset lease was not persisted');
+    }
+    storage.setItem(KNIFE4J_STORAGE_KEYS.resetGeneration, lease.generation);
+    if (storage.getItem(KNIFE4J_STORAGE_KEYS.resetGeneration) !== lease.generation) {
+      throw new Error('reset generation was not persisted');
+    }
+    observeResetSnapshot(lease.generation, true);
+    return lease;
+  } catch (error) {
+    onCoordinationError?.(error);
+    if (candidateLease) {
+      try {
+        const persisted = parseResetLease(storage.getItem(KNIFE4J_STORAGE_KEYS.resetLease));
+        if (persisted?.generation === candidateLease.generation) {
+          storage.removeItem(KNIFE4J_STORAGE_KEYS.resetLease);
+        }
+      } catch {
+        // The coordination failure below already makes the reset incomplete.
+      }
+    }
+    if (recordCoordinationFailure) {
+      recordFailure(result, {
+        area: 'localStorage',
+        key: KNIFE4J_STORAGE_KEYS.resetLease,
+        reason: `reset coordination failed: ${errorMessage(error)}`,
+      });
+    }
+    return null;
   }
 }
 
