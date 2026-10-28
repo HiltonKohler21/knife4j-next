@@ -24,6 +24,9 @@ jobs:
         with:
           fetch-depth: 1
 
+      - name: Verify change classification
+        run: tools/test-ci-changes.sh
+
       - name: Classify changed paths
         id: classify
         env:
@@ -163,6 +166,21 @@ jobs:
 
       - name: Test front core
         run: tools/test-front-core.sh
+
+      - name: Verify Schema Worker in headless Chrome
+        if: matrix.node-version == '26'
+        run: |
+          mkdir -p build/reports/schema-worker
+          node front/ui-react/scripts/run-schema-example-worker-acceptance.mjs --smoke --static-root front/ui-react/dist > build/reports/schema-worker/acceptance.json
+
+      - name: Upload Schema Worker browser evidence
+        if: always() && matrix.node-version == '26'
+        uses: actions/upload-artifact@v4
+        with:
+          name: schema-worker-browser
+          path: build/reports/schema-worker/acceptance.json
+          if-no-files-found: ignore
+          retention-days: 14
 
   knife4x-go-test:
     needs: changes
