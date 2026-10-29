@@ -1920,56 +1920,65 @@ describe('Knife4j storage cleanup registry', () => {
     expect(indexedDB.values.has(authKey)).toBe(false);
   });
 
-  it('elects one fallback claimant when two resets start from an empty lease', async () => {
-    const localStorage = new MemoryWebStorage({});
-    const sessionStorage = new MemoryWebStorage({});
-    let activeKeyScans = 0;
-    let maxConcurrentKeyScans = 0;
-    let signalKeyScanStarted: (() => void) | undefined;
-    const keyScanStarted = new Promise<void>((resolve) => {
-      signalKeyScanStarted = resolve;
-    });
-    let releaseKeyScans: (() => void) | undefined;
-    const keyScanGate = new Promise<void>((resolve) => {
-      releaseKeyScans = resolve;
-    });
-    const indexedDB: Knife4jIndexedDbStorage = {
-      keys: async () => {
-        activeKeyScans += 1;
-        maxConcurrentKeyScans = Math.max(maxConcurrentKeyScans, activeKeyScans);
-        signalKeyScanStarted?.();
-        await keyScanGate;
-        activeKeyScans -= 1;
-        return [];
-      },
-      delete: async () => {},
-    };
+  it.each(['fallback', 'web-locks'] as const)(
+    'serializes concurrent resets without publishing a second reset claim (%s)',
+    async (mode) => {
+      const lockManager = mode === 'web-locks' ? new MemoryLockManager() : null;
+      const localStorage = new (class extends MemoryWebStorage {
+        override setItem(key: string, value: string): void {
+          if (key.startsWith(KNIFE4J_STORAGE_PREFIXES.resetClaim)) throw new Error('redundant reset claim');
+          super.setItem(key, value);
+        }
+      })({});
+      const sessionStorage = new MemoryWebStorage({});
+      let activeKeyScans = 0;
+      let maxConcurrentKeyScans = 0;
+      let signalKeyScanStarted: (() => void) | undefined;
+      const keyScanStarted = new Promise<void>((resolve) => {
+        signalKeyScanStarted = resolve;
+      });
+      let releaseKeyScans: (() => void) | undefined;
+      const keyScanGate = new Promise<void>((resolve) => {
+        releaseKeyScans = resolve;
+      });
+      const indexedDB: Knife4jIndexedDbStorage = {
+        keys: async () => {
+          activeKeyScans += 1;
+          maxConcurrentKeyScans = Math.max(maxConcurrentKeyScans, activeKeyScans);
+          signalKeyScanStarted?.();
+          await keyScanGate;
+          activeKeyScans -= 1;
+          return [];
+        },
+        delete: async () => {},
+      };
 
-    const firstReset = clearRegisteredKnife4jStorage(
-      'all-local-data',
-      { localStorage, sessionStorage, indexedDB },
-      null,
-    );
-    const secondReset = clearRegisteredKnife4jStorage(
-      'all-local-data',
-      { localStorage, sessionStorage, indexedDB },
-      null,
-    );
+      const firstReset = clearRegisteredKnife4jStorage(
+        'all-local-data',
+        { localStorage, sessionStorage, indexedDB },
+        lockManager,
+      );
+      const secondReset = clearRegisteredKnife4jStorage(
+        'all-local-data',
+        { localStorage, sessionStorage, indexedDB },
+        lockManager,
+      );
 
-    await keyScanStarted;
-    await new Promise((resolve) => setTimeout(resolve, 120));
-    expect(maxConcurrentKeyScans).toBe(1);
+      await keyScanStarted;
+      await new Promise((resolve) => setTimeout(resolve, 120));
+      expect(maxConcurrentKeyScans).toBe(1);
 
-    releaseKeyScans?.();
-    const [firstResult, secondResult] = await Promise.all([firstReset, secondReset]);
+      releaseKeyScans?.();
+      const [firstResult, secondResult] = await Promise.all([firstReset, secondReset]);
 
-    expect(firstResult.failures).toEqual([]);
-    expect(secondResult.failures).toEqual([]);
-    expect(localStorage.values.has(KNIFE4J_STORAGE_KEYS.resetLease)).toBe(false);
-    expect(
-      Array.from(localStorage.values.keys()).some((key) => key.startsWith(KNIFE4J_STORAGE_PREFIXES.resetClaim)),
-    ).toBe(false);
-  });
+      expect(firstResult.failures).toEqual([]);
+      expect(secondResult.failures).toEqual([]);
+      expect(localStorage.values.has(KNIFE4J_STORAGE_KEYS.resetLease)).toBe(false);
+      expect(
+        Array.from(localStorage.values.keys()).some((key) => key.startsWith(KNIFE4J_STORAGE_PREFIXES.resetClaim)),
+      ).toBe(false);
+    },
+  );
 
   it('stops Web Storage deletion after losing fallback lease ownership', async () => {
     const localStorage = new (class extends MemoryWebStorage {
