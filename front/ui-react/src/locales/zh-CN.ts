@@ -1,4 +1,5 @@
 const zhCN = {
+  'storage.persistenceFailed': '更改已在本页生效，但未能保存到浏览器。刷新或关闭页面后可能丢失。',
   'schema.example32.serializedDataValidation': '序列化文本解码后的数据校验',
   'schema.example32.diagnostics.UNSAFE_EXAMPLE_NUMBER':
     '序列化文本含有 JavaScript 无法安全表示的数值；保留原文，无法验证数据。',
@@ -844,7 +845,7 @@ const zhCN = {
   'globalParam.confirm.delete': '确定删除这个请求参数吗？',
   'globalParam.confirm.clearApplication': '确定清除当前文档的全部分组参数吗？',
   'globalParam.confirm.clearGroup': '确定清除当前分组的全部请求参数吗？Cookie 会话和鉴权配置不受影响。',
-  'globalParam.msg.saved': '请求参数已保存',
+  'globalParam.msg.saved': '请求参数已在本页生效',
   'globalParam.msg.updated': '参数值已更新',
   'globalParam.msg.duplicate': '同一位置不能添加同名参数',
   'globalParam.msg.requestFailed': '请求执行失败',
@@ -874,7 +875,7 @@ const zhCN = {
   'globalParam.cookie.save': '保存 Cookie 设置',
   'globalParam.cookie.login': '建立会话',
   'globalParam.cookie.logout': '退出会话',
-  'globalParam.cookie.saved': 'Cookie 会话设置已保存',
+  'globalParam.cookie.saved': 'Cookie 会话设置已在本页生效',
   'globalParam.cookie.loginUrlRequired': '请先配置建立会话请求地址',
   'globalParam.cookie.logoutUrlRequired': '请先配置退出会话请求地址',
   'globalParam.cookie.loginSucceeded': '登录请求已成功执行，Cookie 由浏览器管理',

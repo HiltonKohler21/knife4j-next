@@ -58,8 +58,17 @@ function GlobalParamInner() {
   const { t } = useTranslation();
   const { activeGroup, activeSwaggerGroup, swaggerDoc, operationRetrievalUri } = useGroup();
   const { settings } = useSettings();
-  const { applicationParams, groupParams, addParam, updateParam, removeParam, clearParams, cookieSession } =
-    useGlobalParam();
+  const {
+    applicationParams,
+    groupParams,
+    addParam,
+    updateParam,
+    removeParam,
+    clearParams,
+    cookieSession,
+    applicationPersistenceFailed,
+    groupPersistenceFailed,
+  } = useGlobalParam();
   const [paramForm] = Form.useForm<ParamFormValues>();
   const [scope, setScope] = useState<GlobalParamScope>('group');
   const [modalOpen, setModalOpen] = useState(false);
@@ -229,6 +238,9 @@ function GlobalParamInner() {
 
   return (
     <div id="knife4j-global-param-page" style={{ padding: 20, maxWidth: 1180, margin: '0 auto' }}>
+      {(scope === 'application' ? applicationPersistenceFailed : groupPersistenceFailed) && (
+        <Alert type="warning" showIcon title={t('storage.persistenceFailed')} style={{ marginBottom: 16 }} />
+      )}
       <Card
         style={SECTION_CARD_STYLE}
         title={t('globalParam.title')}

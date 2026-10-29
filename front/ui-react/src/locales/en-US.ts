@@ -1,4 +1,6 @@
 const enUS = {
+  'storage.persistenceFailed':
+    'Changes apply on this page but could not be saved to your browser. They may be lost after reloading or closing the page.',
   'schema.example32.serializedDataValidation': 'Validation of data decoded from serialization',
   'schema.example32.diagnostics.UNSAFE_EXAMPLE_NUMBER':
     'The serialization contains a number JavaScript cannot represent safely. The original text is retained; data validation is unavailable.',
@@ -923,7 +925,7 @@ const enUS = {
   'globalParam.confirm.clearApplication': 'Clear every all-groups parameter in the current document?',
   'globalParam.confirm.clearGroup':
     'Clear every request parameter in the current group? Cookie session and authentication settings will not be affected.',
-  'globalParam.msg.saved': 'Request parameter saved',
+  'globalParam.msg.saved': 'Request parameter applied to this page',
   'globalParam.msg.updated': 'Parameter value updated',
   'globalParam.msg.duplicate': 'A parameter with the same name and location already exists',
   'globalParam.msg.requestFailed': 'Request failed',
@@ -956,7 +958,7 @@ const enUS = {
   'globalParam.cookie.save': 'Save Cookie settings',
   'globalParam.cookie.login': 'Create session',
   'globalParam.cookie.logout': 'End session',
-  'globalParam.cookie.saved': 'Cookie session settings saved',
+  'globalParam.cookie.saved': 'Cookie session settings applied to this page',
   'globalParam.cookie.loginUrlRequired': 'Configure the create-session request URL first',
   'globalParam.cookie.logoutUrlRequired': 'Configure the end-session request URL first',
   'globalParam.cookie.loginSucceeded': 'Login request succeeded; the browser manages the Cookie',

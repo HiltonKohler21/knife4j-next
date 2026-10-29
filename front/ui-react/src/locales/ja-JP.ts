@@ -1,4 +1,6 @@
 const jaJP = {
+  'storage.persistenceFailed':
+    '変更はこのページに適用されましたが、ブラウザーに保存できませんでした。再読み込みやページを閉じると失われる場合があります。',
   'schema.example32.serializedDataValidation': 'シリアル化テキストをデコードしたデータの検証',
   'schema.example32.diagnostics.UNSAFE_EXAMPLE_NUMBER':
     'JavaScript で安全に表現できない数値があります。原文を保持しますが、データは検証できません。',
@@ -926,7 +928,7 @@ const jaJP = {
   'globalParam.confirm.clearApplication': '現在のドキュメントのすべてのグループ用パラメータをクリアしますか？',
   'globalParam.confirm.clearGroup':
     '現在のグループのリクエストパラメータをすべてクリアしますか？Cookie セッションと認証設定には影響しません。',
-  'globalParam.msg.saved': 'リクエストパラメータを保存しました',
+  'globalParam.msg.saved': 'リクエストパラメータをこのページに適用しました',
   'globalParam.msg.updated': 'パラメータ値を更新しました',
   'globalParam.msg.duplicate': '同じ位置に同名のパラメータは追加できません',
   'globalParam.msg.requestFailed': 'リクエストに失敗しました',
@@ -959,7 +961,7 @@ const jaJP = {
   'globalParam.cookie.save': 'Cookie 設定を保存',
   'globalParam.cookie.login': 'セッションを確立',
   'globalParam.cookie.logout': 'セッションを終了',
-  'globalParam.cookie.saved': 'Cookie セッション設定を保存しました',
+  'globalParam.cookie.saved': 'Cookie セッション設定をこのページに適用しました',
   'globalParam.cookie.loginUrlRequired': 'セッション確立リクエストの URL を設定してください',
   'globalParam.cookie.logoutUrlRequired': 'セッション終了リクエストの URL を設定してください',
   'globalParam.cookie.loginSucceeded': 'ログインリクエストが成功しました。Cookie はブラウザーが管理します',

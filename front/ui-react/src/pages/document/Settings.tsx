@@ -39,7 +39,7 @@ const STORAGE_AREA_LABEL_KEYS: Record<Knife4jStorageArea, string> = {
 
 export default function Settings() {
   const { t } = useTranslation();
-  const { settings, setSetting } = useSettings();
+  const { settings, setSetting, persistenceFailed } = useSettings();
 
   const handleEnableHost = (checked: boolean) => {
     if (checked && !settings.enableHostText.trim()) {
@@ -119,6 +119,9 @@ export default function Settings() {
 
   return (
     <div id="knife4j-settings-page" style={{ maxWidth: 720, margin: '16px auto', padding: '0 16px' }}>
+      {persistenceFailed && (
+        <Alert type="warning" showIcon title={t('storage.persistenceFailed')} style={{ marginBottom: 16 }} />
+      )}
       <Alert title={t('settings.tip')} type="info" showIcon style={{ marginBottom: 16 }} />
 
       {/* 请求参数缓存 */}
