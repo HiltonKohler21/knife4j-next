@@ -13,7 +13,15 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
-const staticRoot = path.join(repoRoot, 'knife4x/go/internal/ui/static');
+const args = process.argv.slice(2);
+let smoke = false;
+let staticRoot = path.join(repoRoot, 'knife4x/go/internal/ui/static');
+while (args.length > 0) {
+  const arg = args.shift();
+  if (arg === '--smoke') smoke = true;
+  else if (arg === '--static-root' && args[0] && !args[0].startsWith('--')) staticRoot = path.resolve(args.shift());
+  else throw new Error(`Unknown or incomplete argument: ${arg}`);
+}
 const temporary = fs.mkdtempSync(path.join(os.tmpdir(), 'knife4j-worker-acceptance-'));
 const prefixes = ['/', '/knife4x/', '/app/webjars/knife4j-ui-react/'];
 const requests = [];
@@ -313,10 +321,10 @@ try {
         const ordinary = await evaluate(cdp, page.sessionId, 'window.__acceptance.ordinary()');
         const scopeAndGraph = await evaluate(cdp, page.sessionId, 'window.__acceptance.scopeAndGraph()');
         const interruption = [];
-        for (const mode of ['abort', 'timeout', 'dispose', 'runtime-dispose'])
+        for (const mode of smoke ? ['abort', 'timeout'] : ['abort', 'timeout', 'dispose', 'runtime-dispose'])
           interruption.push(await pathological(cdp, page, mode));
         let cancellationGate;
-        if (prefix === '/') {
+        if (!smoke && prefix === '/') {
           for (const mode of ['timeout-schema-example', 'timeout-schema-examples'])
             interruption.push(await pathological(cdp, page, mode));
           const samples = [];
@@ -385,7 +393,7 @@ try {
     servedAssets.some((asset) => asset.path !== workerAsset),
     'actual Worker dynamic chunks were not requested',
   );
-  console.log(JSON.stringify({ ok: true, staticRoot, workerAsset, servedAssets, ...evidence }, null, 2));
+  console.log(JSON.stringify({ ok: true, mode: smoke ? 'smoke' : 'full', staticRoot, workerAsset, servedAssets, ...evidence }, null, 2));
 } catch (error) {
   console.error(JSON.stringify({ ok: false, error: error.stack ?? String(error) }, null, 2));
   process.exitCode = 1;
