@@ -1,3 +1,6 @@
+import { applyMaterializedMultipartContentType, sendDebugHttpRequest } from './debugHttpRequest';
+import { interpretResponseBlob } from './debugResponseBody';
+import { consumeDebugSse } from './debugSseResponse';
 import {
   DEBUG_HTTP_METHODS,
   buildInitialDebugState,
@@ -304,111 +307,6 @@ const METHOD_COLORS: Record<string, string> = {
   OPTIONS: 'default',
   TRACE: 'magenta',
 };
-
-// ─── Response body classification ─────────────────────
-
-/**
- * Map a response blob + Content-Type into a representation the
- * ResponsePanel can render directly. Text-friendly payloads are always
- * decoded into `rawText` so the Raw tab can show something even for
- * image / binary responses that choose to embed ASCII.
- */
-/**
- * Parse filename from Content-Disposition header.
- * Supports both `filename*=UTF-8''...` (RFC 5987) and plain `filename=...` forms.
- */
-function parseContentDispositionFilename(header: string): string | undefined {
-  if (!header) return undefined;
-
-  // RFC 5987: filename*=UTF-8''encoded%20name
-  const rfc5987Match = header.match(/filename\*\s*=\s*([^']*)'[^']*'([^;,\s]+)/i);
-  if (rfc5987Match) {
-    try {
-      return decodeURIComponent(rfc5987Match[2]);
-    } catch {
-      // fall through to plain filename
-    }
-  }
-
-  // Plain: filename="foo.xlsx" or filename=foo.xlsx
-  const plainMatch = header.match(/filename\s*=\s*"?([^";,\s]+)"?/i);
-  if (plainMatch) {
-    return plainMatch[1];
-  }
-
-  return undefined;
-}
-
-async function interpretResponseBlob(
-  blob: Blob,
-  contentType: string,
-  requestUrl: string,
-  contentDisposition?: string,
-): Promise<{
-  kind: DebugResponsePayload['kind'];
-  rawText: string;
-  objectUrl?: string;
-  filename?: string;
-}> {
-  const ct = (contentType || '').toLowerCase();
-
-  // Content-Disposition: attachment → treat as binary download regardless of content-type
-  const isAttachment = contentDisposition ? /attachment/i.test(contentDisposition) : false;
-  const cdFilename = contentDisposition ? parseContentDispositionFilename(contentDisposition) : undefined;
-
-  if (isAttachment) {
-    const filename = cdFilename ?? extractFilenameFromUrl(requestUrl) ?? 'download';
-    return {
-      kind: 'binary',
-      rawText: '',
-      objectUrl: URL.createObjectURL(blob),
-      filename,
-    };
-  }
-
-  // image/* → inline preview via object URL, keep rawText empty (binary)
-  if (ct.startsWith('image/')) {
-    return { kind: 'image', rawText: '', objectUrl: URL.createObjectURL(blob) };
-  }
-
-  // application/json (and *+json variants) → JSON text
-  if (ct.includes('json')) {
-    const rawText = await blob.text();
-    return { kind: 'json', rawText };
-  }
-
-  // Anything text-like: text/plain, text/html, application/javascript, application/xml, text/xml, etc.
-  if (ct.startsWith('text/') || ct.includes('javascript') || ct.includes('xml') || ct.includes('yaml')) {
-    const rawText = await blob.text();
-    return { kind: 'text', rawText };
-  }
-
-  // Empty Content-Type: fall back to text interpretation for robustness
-  if (!ct) {
-    const rawText = await blob.text();
-    return { kind: rawText ? 'text' : 'binary', rawText };
-  }
-
-  // Binary payload (pdf, octet-stream, zip, xlsx, ...) → download link.
-  const filename = cdFilename ?? extractFilenameFromUrl(requestUrl) ?? 'download';
-  return {
-    kind: 'binary',
-    rawText: '',
-    objectUrl: URL.createObjectURL(blob),
-    filename,
-  };
-}
-
-/** Best-effort filename from a URL path's last segment, dropping query/hash. */
-function extractFilenameFromUrl(url: string): string | undefined {
-  try {
-    const parsed = new URL(url, typeof window === 'undefined' ? 'http://localhost' : window.location.href);
-    const last = parsed.pathname.split('/').filter(Boolean).pop();
-    return last || undefined;
-  } catch {
-    return undefined;
-  }
-}
 
 // ─── Raw mode types ───────────────────────────────────
 
@@ -1482,13 +1380,6 @@ function formatMultipartPlanBody(plan: Extract<FormBodyEncodingPlan, { kind: 'mu
     return plan.authoredBody ?? '';
   }
   return JSON.stringify(plan.parts.map(formatPart), null, 2);
-}
-
-function applyMaterializedMultipartContentType(headers: Record<string, string>, contentType: string | undefined): void {
-  for (const name of Object.keys(headers)) {
-    if (name.toLowerCase() === 'content-type') delete headers[name];
-  }
-  if (contentType) headers['Content-Type'] = contentType;
 }
 
 function oas32PreviewDiagnosticAlertType(diagnostic: Oas32ParameterDiagnostic): 'error' | 'warning' | 'info' {
@@ -3369,68 +3260,18 @@ export default function ApiDebug() {
       abortController = new AbortController();
       sseAbortRef.current = abortController;
 
-      const init: RequestInit = {
-        method: built.method,
-        headers: built.headers,
+      const res = await sendDebugHttpRequest({
+        built,
+        formValues,
+        activeBodyContent,
+        multipartTextFields,
+        preparedMultipart,
+        binaryFile: binaryBodyFileRef.current,
         credentials,
         signal: abortController.signal,
-      };
-
-      if (isOas32 && isMultipart && !preparedMultipart && !multipartPlan) {
-        throw new Error(t('apiDebug.formDiagnostic.FORMDATA_UNREPRESENTABLE'));
-      }
-      if (preparedMultipart) {
-        init.body = preparedMultipart.body;
-        applyMaterializedMultipartContentType(init.headers as Record<string, string>, preparedMultipart.contentType);
-      } else if (multipartPlan && (isOas32 || multipartPlanNeedsEncodedEnvelope(multipartPlan))) {
-        throw new Error(t('apiDebug.formDiagnostic.FORMDATA_UNREPRESENTABLE'));
-      } else if (isMultipart) {
-        // 构建 FormData
-        const fd = new FormData();
-        const jsonFieldSet = new Set(formValues.jsonFields ?? []);
-        // 添加普通字段（非 JSON part）
-        for (const [name, value] of Object.entries(multipartTextFields)) {
-          if (jsonFieldSet.has(name)) {
-            // JSON-encoded part: append as Blob with application/json content type
-            fd.append(name, new Blob([value], { type: 'application/json' }), `${name}.json`);
-          } else {
-            fd.append(name, value);
-          }
-        }
-        // 添加文件字段
-        //
-        // issue #251: single-file fields must only append ONE part even if the user
-        // (or a Upload control bug) staged multiple. The server-side contract for
-        // `@RequestPart("file") MultipartFile file` binds to the first part and
-        // silently drops the rest, which is an invisible data-loss bug. We use
-        // `fileFieldsMultiple` from knife4j-core to decide, matching the UI control
-        // rendered in MultipartForm.
-        const multipleFileNames = new Set(activeBodyContent?.fileFieldsMultiple ?? []);
-        const files = multipartFiles;
-        for (const [name, fileList] of Object.entries(files)) {
-          if (fileList.length === 0) continue;
-          if (multipleFileNames.has(name)) {
-            for (const file of fileList) {
-              fd.append(name, file);
-            }
-          } else {
-            // Single-file: only the first staged file is sent. Belt-and-braces alongside
-            // <Upload maxCount={1}>.
-            fd.append(name, fileList[0]);
-          }
-        }
-        init.body = fd;
-        // 不设 Content-Type，让浏览器自动设 boundary
-        delete (init.headers as Record<string, string>)['Content-Type'];
-      } else if (isBinaryBody && binaryBodyFileRef.current) {
-        init.body = binaryBodyFileRef.current;
-      } else {
-        if (built.body !== undefined && (built.body !== '' || built.explicitExampleBody === true)) {
-          init.body = built.body;
-        }
-      }
-
-      const res = await fetch(built.url, init);
+        isOas32: Boolean(isOas32),
+        unrepresentableMessage: t('apiDebug.formDiagnostic.FORMDATA_UNREPRESENTABLE'),
+      });
       const responseHeaders: Record<string, string> = {};
       res.headers.forEach((value, key) => {
         responseHeaders[key] = value;
@@ -3636,56 +3477,24 @@ export default function ApiDebug() {
           setSseStreaming(false);
           return;
         }
-        const reader = res.body.getReader();
-        const decoder = new TextDecoder();
-        let buffer = '';
         setSseEvents([]);
         setSseStreaming(true);
-
-        const pushSseEvent = (data: string) => {
-          const event: SseEvent = { data, timestamp: Date.now() };
-          sseCollected.push(event);
-          setSseEvents((prev) => [...(prev ?? []), event]);
-        };
-
         const sseHistoryBody = () => formatSseHistoryResponseBody(sseCollected);
-
-        const processChunk = (chunk: string) => {
-          if (!isCurrentDebugRequest()) return;
-          buffer += chunk;
-          const lines = buffer.split('\n');
-          buffer = lines.pop() ?? '';
-          for (const line of lines) {
-            const trimmed = line.trimEnd();
-            if (trimmed.startsWith('data:')) {
-              pushSseEvent(trimmed.slice(5).trimStart());
-            }
-          }
-        };
-
         try {
-          // eslint-disable-next-line no-constant-condition
-          while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
-            if (!isCurrentDebugRequest()) {
-              finalizeHistoryEntry(requestDebugCacheKey, pendingHistoryId, (entry) => ({
-                ...abortEntry(entry, { durationMs: Date.now() - start }),
-                isSse: true,
-                httpStatus: res.status,
-                statusText: res.statusText,
-                responseBody: sseHistoryBody() || undefined,
-              }));
-              return;
-            }
-            processChunk(decoder.decode(value, { stream: true }));
-          }
-          // flush remaining buffer
-          if (buffer.trim().startsWith('data:')) {
-            const data = buffer.trim().slice(5).trimStart();
-            if (data && isCurrentDebugRequest()) {
-              pushSseEvent(data);
-            }
+          const outcome = await consumeDebugSse(res.body, isCurrentDebugRequest, (data) => {
+            const event: SseEvent = { data, timestamp: Date.now() };
+            sseCollected.push(event);
+            setSseEvents((prev) => [...(prev ?? []), event]);
+          });
+          if (outcome === 'superseded') {
+            finalizeHistoryEntry(requestDebugCacheKey, pendingHistoryId, (entry) => ({
+              ...abortEntry(entry, { durationMs: Date.now() - start }),
+              isSse: true,
+              httpStatus: res.status,
+              statusText: res.statusText,
+              responseBody: sseHistoryBody() || undefined,
+            }));
+            return;
           }
           finalizeHistoryEntry(requestDebugCacheKey, pendingHistoryId, (entry) =>
             completeEntry(entry, {
