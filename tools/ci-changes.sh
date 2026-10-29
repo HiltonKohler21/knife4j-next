@@ -12,6 +12,9 @@ full=false
 while IFS= read -r path || [ -n "$path" ]; do
   saw_path=true
   case "$path" in
+    tools/aggregation-shared-sources.txt|tools/verify-aggregation-parity.py|tools/test-aggregation-parity.py)
+      java=true
+      ;;
     front/README.md|front/core/README.md|front/schema-engine/README.md|front/ui-react/README.md|front/vue3/README.md)
       ;;
     front/core/src/__tests__/*|front/core/src/*.test.ts|front/schema-engine/tests/*|front/ui-react/src/*.test.ts|front/ui-react/src/*.test.tsx)

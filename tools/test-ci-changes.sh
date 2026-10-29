@@ -54,5 +54,6 @@ assert_case "shared configuration" "$all" $'.github/workflows/build.yml\n.bun-ve
 assert_case "unknown path" "$all" "new-area/example.txt"
 assert_case "maintenance files" "$none" $'README.md\nCONTRIBUTING.md\nAGENTS.md\n.agent/PROJECT.md\n.gitignore\ntools/README.md\ntools/agent-status.sh\ntools/test-agent-status.sh\ntools/test-fixtures/agent-status/gh\ntools/claude/run.sh\ntools/test-all.sh\ntools/verify-github-release.sh'
 assert_case "empty input" "$all" "__EMPTY__"
+assert_case "aggregation parity" "$java_only" $'tools/aggregation-shared-sources.txt\ntools/verify-aggregation-parity.py\ntools/test-aggregation-parity.py'
 
 printf 'ci change classification tests passed\n'
