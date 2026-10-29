@@ -12,13 +12,18 @@ full=false
 while IFS= read -r path || [ -n "$path" ]; do
   saw_path=true
   case "$path" in
+    front/README.md|front/core/README.md|front/schema-engine/README.md|front/ui-react/README.md|front/vue3/README.md)
+      ;;
+    front/core/src/__tests__/*|front/core/src/*.test.ts|front/schema-engine/tests/*|front/ui-react/src/*.test.ts|front/ui-react/src/*.test.tsx)
+      react=true
+      ;;
     docs/*|tools/test-docs.sh)
       docs=true
       ;;
     knife4j/*|tools/test-java.sh|tools/test-java-compatibility.sh|tools/java-compatibility-*|tools/verify-java-compatibility-contracts.py|tools/test-release-tools.sh|tools/test-fixtures/mock-maven-central-curl.sh|tools/extract-release-note.sh|tools/verify-configuration-metadata.sh|tools/verify-release-context.sh|tools/verify-maven-central.sh|tools/verify-release-modules.sh|tools/release-modules.txt|.java-version)
       java=true
       ;;
-    front/core/*|front/ui-react/*|front/package.json|front/bun.lock)
+    front/core/*|front/schema-engine/*|front/ui-react/*|front/package.json|front/bun.lock)
       java=true
       react=true
       knife4x_go=true

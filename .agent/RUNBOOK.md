@@ -42,6 +42,20 @@ OAS2 Vue3 仍沿用 Chrome/Edge 117、Firefox 119、Safari 17.4。Node 与编译
 - 有意增删 Spring Boot 配置 key 时，构建后运行 `./tools/verify-java-compatibility-contracts.py --update-config`，人工核对 `tools/java-compatibility-contracts.tsv` 后再执行标准 Java 验证；不得为过门禁直接重生成并跳过语义审查。
 - 增删 smoke 模块时同步更新 `tools/test-java.sh` 的 `SMOKE_MODULES` 与 `.github/workflows/build.yml` 中的 summary 列表（若仓库已抽出 `tools/smoke-modules.txt` 则只改该文件）。
 
+## Schema Worker 浏览器门禁
+
+标准前端构建后运行：
+
+```bash
+node front/ui-react/scripts/run-schema-example-worker-acceptance.mjs --smoke --static-root front/ui-react/dist
+```
+
+Build 的 Node 26 当前补丁任务执行此门禁，读取该次 Vite 产物；覆盖三个部署前缀、普通示例与资源语义、原生慢正则取消/超时和恢复、CSP/404/MIME 启动拒绝。缺少 Chrome/Chromium 时失败，可通过 `CHROME_PATH` 指定独立无头浏览器；不连接用户浏览器。
+
+专项完整验收去掉 `--smoke`，额外执行 dispose、作者示例超时和 30 次取消延迟统计。省略 `--static-root` 时保留原有 Knife4x 嵌入产物验收。smoke 不替代完整性能测量，也不证明所有最低浏览器版本。
+
+CI 分类中 Schema 生产源码与 React/core 一样包含 Java 和 Go 消费方；独立测试文件只跑前端门禁，五个前端包/根 README 不触发产品构建。混合变更取并集，未知路径仍全量。
+
 ## Bug 复现（强制）
 
 凡 **bug / 回归 / 错误行为** 类任务（本仓 issue 或 upstream 关联），**先复现再写修复**。  
