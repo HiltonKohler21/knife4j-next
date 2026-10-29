@@ -33,7 +33,7 @@ function CookieSessionInner() {
     routeGroupReady,
   } = useGroup();
   const { settings } = useSettings();
-  const { cookieSession, groupId, setCookieSession } = useGlobalParam();
+  const { cookieSession, groupId, setCookieSession, groupPersistenceFailed } = useGlobalParam();
   const [cookieForm] = Form.useForm<CookieSessionConfig>();
   const [sessionAction, setSessionAction] = useState<'login' | 'logout' | null>(null);
   const currentGroupName = activeGroup.label || activeGroup.value || t('globalParam.currentGroup');
@@ -132,6 +132,9 @@ function CookieSessionInner() {
 
   return (
     <div id="knife4j-cookie-session-page" style={{ padding: 20, maxWidth: 1180, margin: '0 auto' }}>
+      {groupPersistenceFailed && (
+        <Alert type="warning" showIcon title={t('storage.persistenceFailed')} style={{ marginBottom: 16 }} />
+      )}
       <Card
         title={
           <Space>
