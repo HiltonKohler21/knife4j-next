@@ -151,7 +151,7 @@ body {
   background: #1677ff;
 }
 
-.knife4j-workspace-tabs.ant-tabs:has(.knife4j-operation-tabs) > .ant-tabs-nav {
+.knife4j-workspace-operation.ant-tabs > .ant-tabs-nav {
   margin-bottom: 0;
 }
 
@@ -221,8 +221,8 @@ body {
   overflow-wrap: anywhere;
 }
 
-/* Keep prose readable without constraining Markdown tables or code samples. */
-.knife4j-operation-description > .knife4j-markdown > :is(p, ul, ol, blockquote) {
+/* Constrain paragraphs, not containers that can also hold tables or code. */
+.knife4j-operation-description > .knife4j-markdown p {
   max-width: 80ch;
 }
 
@@ -245,7 +245,7 @@ body {
   border: 1px solid #e8edf3;
 }
 
-.knife4j-operation-content:has(.knife4j-adaptive-code-page) {
+.knife4j-operation-content-code {
   height: max(360px, calc(100dvh - 176px));
   min-height: 0;
   display: flex;
@@ -445,7 +445,7 @@ body {
     min-height: 0;
   }
 
-  .knife4j-operation-content:has(.knife4j-adaptive-code-page) {
+  .knife4j-operation-content-code {
     height: 100%;
   }
 
