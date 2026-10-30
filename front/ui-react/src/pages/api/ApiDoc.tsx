@@ -767,15 +767,8 @@ function ApiDocContent({ swaggerDoc, operation }: { swaggerDoc: SwaggerDoc; oper
 
   return (
     <OperationModeLayout activeKey="doc">
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          marginBottom: 4,
-        }}
-      >
-        <Title level={4} style={{ margin: 0 }}>
+      <div className="knife4j-operation-heading">
+        <Title level={5} style={{ margin: 0 }}>
           {op.summary ?? operation.path}
         </Title>
         <Space>
@@ -903,7 +896,7 @@ function ApiDocContent({ swaggerDoc, operation }: { swaggerDoc: SwaggerDoc; oper
         />
       )}
 
-      <Title level={5} style={{ marginTop: 24 }}>
+      <Title level={5} className="knife4j-operation-section-title">
         {t('apiDoc.requestParams')}
       </Title>
       <Table<ParamRow>
@@ -924,7 +917,7 @@ function ApiDocContent({ swaggerDoc, operation }: { swaggerDoc: SwaggerDoc; oper
         />
       )}
 
-      <Title level={5} style={{ marginTop: 24 }}>
+      <Title level={5} className="knife4j-operation-section-title">
         {t('apiDoc.requestBody')}
       </Title>
       {op.requestBody?.description && (
@@ -1011,7 +1004,7 @@ function ApiDocContent({ swaggerDoc, operation }: { swaggerDoc: SwaggerDoc; oper
         <SchemaFieldTable fields={[]} emptyText={t('apiDoc.noBody')} />
       )}
 
-      <Title level={5} style={{ marginTop: 24 }}>
+      <Title level={5} className="knife4j-operation-section-title">
         {t('apiDoc.responseStructure')}
       </Title>
       <Tabs
